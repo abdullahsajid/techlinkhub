@@ -5,12 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"nodemon app.js"
+    "start": "nodemon app.js"
   },
   "author": "Abdullah sajid",
   "license": "ISC",
   "dependencies": {
+    "db-migrate": "^0.11.14",
+    "db-migrate-mysql": "^2.3.2",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.5",
     "nodemon": "^3.0.1"
   }
 }

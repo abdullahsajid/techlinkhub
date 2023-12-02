@@ -1,5 +1,12 @@
 const express = require('express')
 const app = express()
+const {db_connection} = require('./database/db_index')
+const orgApis = require('./api/orgApis')
+
+app.use(express.json())
+db_connection()
+orgApis(app)
+
 
 app.get('/',(req,res)=>{
     res.status(200).json({
