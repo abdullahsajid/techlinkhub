@@ -24,6 +24,30 @@ class candidateService{
         return post
     }
 
+    async userComment({comment,postId,userId}){
+        const comments = await this.repository.postComment({comment,postId,userId})
+        return comments
+    }
+
+    async userLike({postId,userId}){
+        const userLike = await this.repository.postLike({postId,userId})
+        return userLike
+    }
+
+    async userSocial({name,link,profileId,userId}){
+        const links = await this.repository.postSocialLinks({name,link,profileId,userId})
+        return links
+    }
+
+    async userPostImg({img,postId,userId}){
+        const postImg = await this.repository.postImg({img,postId,userId})
+        return postImg
+    }
+
+    async userGettingPost({id}){
+        const getPost = await this.repository.getPost({id})
+        return getPost
+    }
 }
 
 module.exports = candidateService
