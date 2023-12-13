@@ -23,7 +23,7 @@ module.exports = (app) => {
             {data:data[0],token,message:"login successfully!"}
         )
     })
-
+    
     app.post('/createProfile',auth,async(req,res)=>{
         const data = await service.profile({
             name:req.body.name,
@@ -76,4 +76,19 @@ module.exports = (app) => {
         })
         res.status(201).json({data,message:'post added successfully!'})
     })
+
+    app.get("/logout",(req,res) => {
+        try{
+            res.status(200)
+            .cookie('token',null,
+            {expires: new Date(Date.now()),httpOnly:true,sameSite:'None',secure:true})
+            .json({
+                success:true,
+                message:"logout!"
+            })
+        }catch(err){
+            res.status(500).json({success:false,message:err.message})
+        }
+    })
+
 }

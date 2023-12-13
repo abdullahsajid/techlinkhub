@@ -18,8 +18,16 @@ class candidateRepository{
     }
 
     async createProfile({name,desc,email,industry,location,banner,avatar,website,userId}){
+        const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
+            folder:'tlhbanner'
+        })
+        const tlhavatar = await cloudinary.v2.uploader.upload(avatar,{
+            folder:'tlkavatar'
+        })
+        const profileBanner = tlhBanner.secure_url
+        const profileAvatar = tlhavatar.secure_url
         const profile = await this.db.query(`INSERT INTO org_profile (org_name,description,org_email,industry,location,banner_url,avatar_url,org_website,user_id) VALUES (?,?,?,?,?,?,?,?,?)`,
-        [name,desc,email,industry,location,banner,avatar,website,userId])
+        [name,desc,email,industry,location,profileBanner,profileAvatar,website,userId])
         return profile[0]
     }
 

@@ -6,13 +6,13 @@ module.exports = (app) => {
     app.post('/createOrgProfile',auth,async(req,res)=>{
         const data = await service.profile({
             name:req.body.name,
-            desc:req.body.desc,
-            email:req.body.email,
+            desc:req.body.Bio,
+            email:req.body.Email,
             industry:req.body.industry,
             location:req.body.location,
             banner:req.body.banner,
             avatar:req.body.avatar,
-            website:req.body.website,
+            website:req.body.weblink,
             userId:req.user.id
         })
         res.status(201).json({
