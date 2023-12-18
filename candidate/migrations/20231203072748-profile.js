@@ -23,6 +23,7 @@ exports.up = function(db,callback){
       bio TEXT,
       education TEXT,
       experience TEXT,
+      about TEXT DEFAULT NULL,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       user_id INT NOT NULL,

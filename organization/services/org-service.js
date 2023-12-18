@@ -8,8 +8,8 @@ class candidateService{
     }
 
     async profile(profileData){
-        const{name,desc,email,industry,location,banner,avatar,website,userId} = profileData
-        const profileDetail = await this.repository.createProfile({name,desc,email,industry,location,banner,avatar,website,userId})
+        const{name,desc,email,industry,location,banner,avatar,website,userId,about} = profileData
+        const profileDetail = await this.repository.createProfile({name,desc,email,industry,location,banner,avatar,website,userId,about})
         return profileDetail
     }
 

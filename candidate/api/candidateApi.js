@@ -4,13 +4,13 @@ module.exports = (app) => {
     const service = new candidateService()
 
     app.post('/signup', async (req,res,next) => {
-        const data = await service.signUp({
+        const [data] = await service.signUp({
             email:req.body.email,
             password:req.body.password,
             name:req.body.name
         })
         const token = await service.getToken()
-        res.status(201).json({data:data,token})
+        res.status(201).json({data:data[0],token})
     })
 
     app.post('/login',async (req,res) => {
@@ -28,6 +28,7 @@ module.exports = (app) => {
         const data = await service.profile({
             name:req.body.name,
             bio:req.body.bio,
+            about:req.body.about,
             education:req.body.education,
             banner:req.body.banner,
             avatar:req.body.avatar,
@@ -53,7 +54,7 @@ module.exports = (app) => {
 
     app.post('/addSocialLinks',auth,async(req,res) => {
         const data = await service.socialLinks({
-            name:req.body.name,
+            name:req.body.socialName,
             link:req.body.link,
             userId:req.user.id
         })
@@ -65,7 +66,7 @@ module.exports = (app) => {
 
     app.get('/getProfile',auth, async (req,res) => {
         const data = await service.profileDetails({id:req.user.id})
-        res.status(200).json({data})
+        res.status(200).json({data:data[0]})
     })
 
     app.post('/candidatePost/:id',auth,async(req,res)=>{

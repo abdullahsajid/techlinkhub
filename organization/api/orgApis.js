@@ -13,7 +13,8 @@ module.exports = (app) => {
             banner:req.body.banner,
             avatar:req.body.avatar,
             website:req.body.weblink,
-            userId:req.user.id
+            userId:req.user.id,
+            about:req.body.about
         })
         res.status(201).json({
             data:data,
@@ -23,7 +24,7 @@ module.exports = (app) => {
 
     app.get('/getProfile',auth, async (req,res) => {
         const data = await service.profileDetails({id:req.user.id})
-        res.status(200).json({data})
+        res.status(200).json({data:data[0]})
     })
 
     app.post('/orgPost/:id',auth,async(req,res)=>{

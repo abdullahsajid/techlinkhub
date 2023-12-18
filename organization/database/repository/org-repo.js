@@ -17,7 +17,7 @@ class candidateRepository{
         }
     }
 
-    async createProfile({name,desc,email,industry,location,banner,avatar,website,userId}){
+    async createProfile({name,desc,email,industry,location,banner,avatar,website,userId,about}){
         const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
             folder:'tlhbanner'
         })
@@ -26,16 +26,30 @@ class candidateRepository{
         })
         const profileBanner = tlhBanner.secure_url
         const profileAvatar = tlhavatar.secure_url
-        const profile = await this.db.query(`INSERT INTO org_profile (org_name,description,org_email,industry,location,banner_url,avatar_url,org_website,user_id) VALUES (?,?,?,?,?,?,?,?,?)`,
-        [name,desc,email,industry,location,profileBanner,profileAvatar,website,userId])
+        const profile = await this.db.query(`INSERT INTO org_profile (org_name,description,org_email,industry,location,banner_url,avatar_url,org_website,user_id,about) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+        [name,desc,email,industry,location,profileBanner,profileAvatar,website,userId,about])
         return profile[0]
     }
 
     async getProfile({id}){
-        const profile = await this.db.query(`SELECT * FROM org_profile WHERE id = ?`,[id])
-        return profile
+        const profile = await this.db.query(`
+            SELECT
+                op.org_name,op.description,op.org_email,op.industry,op.location,op.banner_url,op.avatar_url,op.org_website,op.about,op.createdAt,
+                (SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',osl.id,
+                        'name',osl.social_name,
+                        'link',osl.link
+                            )
+                        )
+                FROM orgsociallinks AS osl
+                WHERE op.user_id = osl.userLink_id 
+                ) AS socialLinks
+            FROM 
+                org_profile AS op WHERE user_id = ?`,[id])
+        return profile[0]
     }
-
+    
     async post({content,userProfile,userId}){
         const candidatePost = await this.db.query(`INSERT INTO post (content,userProfile_id,user__id) VALUES (?,?,?)`,[content,userProfile,userId])
         return candidatePost[0]

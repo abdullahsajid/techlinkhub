@@ -30,7 +30,7 @@ class candidateRepository{
         return userData
     }
 
-    async createProfile({name,bio,education,banner,avatar,experience,userId}){
+    async createProfile({name,bio,about,education,banner,avatar,experience,userId}){
         const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
             folder:'tlhbanner'
         })
@@ -39,8 +39,8 @@ class candidateRepository{
         })
         const profileBanner = tlhBanner.secure_url
         const profileAvatar = tlhavatar.secure_url
-        const profileData = await this.db.query(`INSERT INTO profile (name,bio,education,banner_url,avatar_url,experience,user_id) VALUES (?,?,?,?,?,?,?)`,
-        [name,bio,education,profileBanner,profileAvatar,experience,userId])
+        const profileData = await this.db.query(`INSERT INTO profile (name,bio,about,education,banner_url,avatar_url,experience,user_id) VALUES (?,?,?,?,?,?,?,?)`,
+        [name,bio,about,education,profileBanner,profileAvatar,experience,userId])
         return profileData
     }
 
@@ -58,8 +58,26 @@ class candidateRepository{
     async getProfile({id}){
         const profile = await this.db.query(`
         SELECT 
-            p.id,p.banner_url,p.avatar_url,p.name,p.bio,p.education,p.experience
-            ,s.skill_name,sl.social_name,sl.link
+            p.id,p.banner_url,p.avatar_url,p.name,p.bio,p.education,p.experience,p.about,
+            (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id', s.id,
+                    'skill', s.skill_name
+                        )
+                    )
+            FROM skills s 
+            WHERE p.user_id = s.user_id
+            ) AS skill,
+            (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id', sl.id,
+                    'socialName', sl.social_name,
+                    'link',sl.link
+                        )
+                    )
+            FROM socialLinks sl 
+            WHERE p.user_id = sl.user_id
+            ) AS socialLink
         FROM 
             profile p 
         LEFT JOIN 
@@ -67,7 +85,8 @@ class candidateRepository{
         LEFT JOIN 
             socialLinks sl ON p.user_id = sl.user_id
         WHERE 
-            p.user_id = ?`,[id])
+            p.user_id = ?
+        `,[id])
         
         // const profileDetail = {
         //     id:profile[0].id,
