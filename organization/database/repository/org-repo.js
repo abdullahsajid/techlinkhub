@@ -34,7 +34,7 @@ class candidateRepository{
     async getProfile({id}){
         const profile = await this.db.query(`
             SELECT
-                op.org_name,op.description,op.org_email,op.industry,op.location,op.banner_url,op.avatar_url,op.org_website,op.about,op.createdAt,
+                op.id,op.org_name,op.description,op.org_email,op.industry,op.location,op.banner_url,op.avatar_url,op.org_website,op.about,op.createdAt,
                 (SELECT JSON_ARRAYAGG(
                     JSON_OBJECT(
                         'id',osl.id,
@@ -111,11 +111,61 @@ class candidateRepository{
             `,[id])
         return post[0]
     }
+
+    async updateProfile(data,updateData){
+        let updateObject={}
+        if(data.org_name !== updateData.name){
+            updateObject.org_name = updateData.name
+        }
+        if(data.description !== updateData.desc){
+            updateObject.description = updateData.desc
+        }
+        if(data.about !== updateData.about){
+            updateObject.about = updateData.about
+        }
+        if(data.org_email !== updateData.email){
+            updateObject.org_email = updateData.email
+        }
+        if(data.industry !== updateData.industry){
+            updateObject.industry = updateData.industry
+        }
+        if(data.location !== updateData.location){
+            updateObject.location = updateData.location
+        }
+        if(data.org_website !== updateData.website){
+            updateObject.org_website = updateData.website
+        }
+        if(data.banner_url !== updateData.banner){
+            const extract_id = await data.banner_url.split('/').pop().split('.')[0]
+            const  public_id = `tlhbanner/${extract_id}`
+            await cloudinary.v2.uploader.destroy(public_id)
+            const tlhBanner = await cloudinary.v2.uploader.upload(updateData.banner,{
+                folder:'tlhbanner'
+            })
+            const profileBanner = tlhBanner.secure_url
+            updateObject.banner_url = profileBanner
+        }
+        if(data.avatar_url !== updateData.avatar){
+            const extract_id = await data.banner_url.split('/').pop().split('.')[0]
+            const  public_id =  `tlkavatar/${extract_id}`
+            await cloudinary.v2.uploader.destroy(public_id)
+            const tlhavatar = await cloudinary.v2.uploader.upload(updateData.avatar,{
+                folder:'tlkavatar'
+            })
+            const profileAvatar =  tlhavatar.secure_url
+            updateObject.banner_url = profileAvatar
+        }
+        const key = Object.keys(updateObject)
+        const values = Object.values(updateObject)
+        const setKeys = key.map(key => `${key} = ?`).join(', ')
+    
+        const updateItems = await this.db.query(`UPDATE org_profile SET ${setKeys} WHERE id = ?`,[...values,data.id])
+        return updateItems
+    }
+
 }
 
 module.exports = candidateRepository
 
-// INNER JOIN
-// org_post_likes opl ON p.post_id = opl.userPost_id
-// ,COUNT(opl.userPost_id) AS like_count
+
 

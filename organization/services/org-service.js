@@ -48,6 +48,13 @@ class candidateService{
         const getPost = await this.repository.getPost({id})
         return getPost
     }
+
+    async updateProfileDetails(id,updateData){
+        const profile = await this.repository.getProfile({id})
+        const data = profile[0]
+        const updateProfile = await this.repository.updateProfile(data,updateData)
+        return updateProfile
+    }
 }
 
 module.exports = candidateService

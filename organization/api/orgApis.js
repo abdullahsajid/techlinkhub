@@ -76,5 +76,31 @@ module.exports = (app) => {
         const data = await service.userGettingPost({id:req.params.id})
         res.status(201).json({data})
     })
+
+    app.put('/updateProfile',auth,async(req,res) => {
+        try{
+            const id = req.user.id
+            const data = await service.updateProfileDetails(id,
+                {
+                    name:req.body.name,
+                    desc:req.body.Bio,
+                    email:req.body.Email,
+                    industry:req.body.industry,
+                    location:req.body.location,
+                    banner:req.body.banner,
+                    avatar:req.body.avatar,
+                    website:req.body.weblink,
+                    about:req.body.about
+                }
+            )
+            res.status(200).json({data,
+                message:'successfully updated!',
+                success:true
+            })
+        }catch(err){
+            res.status(500).json({message:err.message})
+        }
+    })
+
 }
 

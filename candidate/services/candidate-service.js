@@ -60,6 +60,13 @@ class candidateService{
         return post
     }
 
+    async updateProfileDetails(id,updateData){
+        const profile = await this.repository.getProfile({id})
+        const data = profile[0]
+        const updateProfile = await this.repository.updateProfile(data,updateData)
+        return updateProfile
+    }
+
     async getToken(){
         return this.token
     }

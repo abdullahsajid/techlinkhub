@@ -78,6 +78,29 @@ module.exports = (app) => {
         res.status(201).json({data,message:'post added successfully!'})
     })
 
+    app.put('/updateProfile',auth,async(req,res) => {
+        try{
+            const id = req.user.id
+            const data = await service.updateProfileDetails(id,
+                {
+                    name:req.body.name,
+                    bio:req.body.bio,
+                    about:req.body.about,
+                    education:req.body.education,
+                    banner:req.body.banner,
+                    avatar:req.body.avatar,
+                    experience:req.body.experience,
+                }
+            )
+            res.status(200).json({data,
+                message:'successfully updated!',
+                success:true
+            })
+        }catch(err){
+            res.status(500).json({message:err.message})
+        }
+    })
+
     app.get("/logout",(req,res) => {
         try{
             res.status(200)

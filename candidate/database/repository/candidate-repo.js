@@ -87,33 +87,6 @@ class candidateRepository{
         WHERE 
             p.user_id = ?
         `,[id])
-        
-        // const profileDetail = {
-        //     id:profile[0].id,
-        //     banner:profile[0].banner_url,
-        //     avatar:profile[0].avatar_url,
-        //     name:profile[0].name,
-        //     bio:profile[0].bio,
-        //     education:profile[0].education,
-        //     experience:profile[0].experience,
-        //     createdAt:profile[0].createdAt,
-        //     updatedAt:profile[0].updatedAt,
-        //     skills:[],
-        //     socialLinks:[]
-        // }
-        // profile.forEach(data => {
-        //     if(data.skill_name){
-        //         profileDetail.skills.push({
-        //             skill_name:data.skill_name
-        //         })
-        //     }
-        //     if(data.social_name && data.link){
-        //         profileDetail.socialLinks.push({
-        //             social_name:data.social_name,
-        //             link:data.link
-        //         })
-        //     }
-        // })
         return profile[0]
     }
 
@@ -121,7 +94,54 @@ class candidateRepository{
         const candidatePost = await this.db.query(`INSERT INTO candidatepost (content,userProfile_id,user_id) VALUES (?,?,?)`,[content,userProfile,userId])
         return candidatePost[0]
     }
+
+    async updateProfile(data,updateData){
+        let updateObject={}
+        if(data.name !== updateData.name){
+            updateObject.name = updateData.name
+        }
+        if(data.bio !== updateData.bio){
+            updateObject.bio = updateData.bio
+        }
+        if(data.about !== updateData.about){
+            updateObject.about = updateData.about
+        }
+        if(data.education !== updateData.education){
+            updateObject.education = updateData.education
+        }
+        if(data.experience !== updateData.experience){
+            updateObject.experience = updateData.experience
+        }
+        if(data.banner_url !== updateData.banner){
+            const extract_id = await data.banner_url.split('/').pop().split('.')[0]
+            const  public_id = `tlhbanner/${extract_id}`
+            await cloudinary.v2.uploader.destroy(public_id)
+            const tlhBanner = await cloudinary.v2.uploader.upload(updateData.banner,{
+                folder:'tlhbanner'
+            })
+            const profileBanner = tlhBanner.secure_url
+            updateObject.banner_url = profileBanner
+        }
+        if(data.avatar_url !== updateData.avatar){
+            const extract_id = await data.banner_url.split('/').pop().split('.')[0]
+            const  public_id =  `tlkavatar/${extract_id}`
+            await cloudinary.v2.uploader.destroy(public_id)
+            const tlhavatar = await cloudinary.v2.uploader.upload(updateData.avatar,{
+                folder:'tlkavatar'
+            })
+            const profileAvatar =  tlhavatar.secure_url
+            updateObject.banner_url = profileAvatar
+        }
+        const key = Object.keys(updateObject)
+        const values = Object.values(updateObject)
+        const setKeys = key.map(key => `${key} = ?`).join(', ')
+    
+        const updateItems = await this.db.query(`UPDATE profile SET ${setKeys} WHERE id = ?`,[...values,data.id])
+        return updateItems
+    }
 }
 
 module.exports = candidateRepository
+
+
 
