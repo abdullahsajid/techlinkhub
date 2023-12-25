@@ -91,6 +91,38 @@ module.exports = (app) => {
         }
     })
 
+    app.post('/postComment/:id',auth,async(req,res) => {
+        const data = await service.userComment({
+            comment:req.body.comment,
+            postId:req.params.id,
+            userId:req.user.id
+        })
+        res.status(201).json({data,message:"comment added!"})
+    })
+
+    app.get('/getComments/:id', auth, async (req,res)=>{
+        try{
+            const id = req.params.id
+            const data = await service.getUserComments({id})
+            res.status(201).json({success:true,data:data[0]})
+        }catch(err){
+            res.status(500).json({success:false,message:err.message})
+        }  
+    })
+
+    app.post('/postLike/:id',auth, async (req,res) => {
+        try {
+            const data = await service.userLike({
+                postId:req.params.id,
+                userId:req.user.id
+            })
+            res.status(201).json({success:true,data,message:"post Like successfully!"})
+        } catch (error) {
+            res.status(500).json({success:false,message:err.message})
+        }
+        
+    })
+
     // app.post('/postImg/:id',auth,async (req,res) => {
     //     try{
     //         const data = await service.userPostImg({

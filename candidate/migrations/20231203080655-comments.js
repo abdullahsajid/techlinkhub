@@ -16,7 +16,7 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function(db,callback) {
   db.runSql(`CREATE TABLE comments(
-    comment_id INT NOT NULL,
+    comment_id INT PRIMARY KEY AUTO_INCREMENT,
     comment VARCHAR(255),
     IdPost INT NOT NULL,
     userComm_id INT NOT NULL,

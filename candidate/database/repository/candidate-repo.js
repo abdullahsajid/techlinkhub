@@ -84,7 +84,19 @@ class candidateRepository{
                     'content', cp.content,
                     'createdAt',cp.createdAt,
                     'postImg',cp.url,
-                    'userId',cp.userPost_id
+                    'userId',cp.userPost_id,
+                    "comments",(SELECT JSON_ARRAYAGG(
+                                JSON_OBJECT(
+                                    'id', c.comment_id,
+                                    'comment', c.comment,
+                                    'postId',c.IdPost,
+                                    "userId",c.userComm_id,
+                                    'createdAt',c.createdAt
+                                        )
+                                    )
+                            FROM comments c 
+                            WHERE c.IdPost = cp.post_id
+                            )
                         )
                     )
             FROM candidatepost cp
@@ -108,9 +120,38 @@ class candidateRepository{
         return candidatePost[0]
     }
 
+    async postComment({comment,postId,userId}){
+        const comments = await this.db.query(`INSERT INTO comments (comment,IdPost,userComm_id) VALUES (?,?,?)`,[comment,postId,userId])
+        return comments
+    }
+
     async getProfiles(){
         const profiles = await this.db.query('SELECT * FROM profile')
         return profiles[0]
+    }
+
+    async getComments({id}){
+        const comment = await this.db.query(`
+            SELECT 
+                (SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', c.comment_id,
+                        'comment', c.comment,
+                        'postId',c.IdPost,
+                        "userId",c.userComm_id,
+                        'createdAt',c.createdAt
+                            )
+                        )
+                FROM comments c 
+                WHERE c.IdPost = ?
+                ) AS comments
+            `,[id])
+        return comment[0]
+    }
+
+    async postLike({postId,userId}){
+        const like = await this.db.query(`INSERT INTO candidate_post_likes (userPost_id,usercandId) VALUES (?,?)`,[postId,userId])
+        return like[0]
     }
 
     // async postImg({img,postId,userId}){

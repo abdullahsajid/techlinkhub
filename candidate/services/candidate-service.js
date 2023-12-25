@@ -65,6 +65,21 @@ class candidateService{
         return profile
     }
 
+    async userComment({comment,postId,userId}){
+        const comments = await this.repository.postComment({comment,postId,userId})
+        return comments
+    }
+
+    async getUserComments({id}){
+        const comments = await this.repository.getComments({id})
+        return comments
+    }
+
+    async userLike({postId,userId}){
+        const userLike = await this.repository.postLike({postId,userId})
+        return userLike
+    }
+
     // async userPostImg({img,postId,userId}){
     //     const postImg = await this.repository.postImg({img,postId,userId})
     //     return postImg
