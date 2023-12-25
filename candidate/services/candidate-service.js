@@ -55,10 +55,20 @@ class candidateService{
         return profile
     }
 
-    async userPost({content,userProfile,userId}){
-        const post = await this.repository.post({content,userProfile,userId})
+    async userPost({content,url,userId}){
+        const post = await this.repository.post({content,url,userId})
         return post
     }
+
+    async userProfiles(){
+        const profile = await this.repository.getProfiles()
+        return profile
+    }
+
+    // async userPostImg({img,postId,userId}){
+    //     const postImg = await this.repository.postImg({img,postId,userId})
+    //     return postImg
+    // }
 
     async updateProfileDetails(id,updateData){
         const profile = await this.repository.getProfile({id})

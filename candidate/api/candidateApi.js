@@ -69,14 +69,41 @@ module.exports = (app) => {
         res.status(200).json({data:data[0]})
     })
 
-    app.post('/candidatePost/:id',auth,async(req,res)=>{
-        const data = await service.userPost({
-            content:req.body.content,
-            userProfile:req.params.id,
-            userId:req.user.id
-        })
-        res.status(201).json({data,message:'post added successfully!'})
+    app.post('/candidatePost',auth,async(req,res)=>{
+        try{
+            const data = await service.userPost({
+                content:req.body.content,
+                url:req.body.url,
+                userId:req.user.id
+            })
+            res.status(201).json({data,message:'post added successfully!'})
+        }catch(err){
+            res.status(500).json({message:err.message})
+        }
+    })  
+
+    app.get('/getUserProfiles',auth,async(req,res) => {
+        try{
+            const data = await service.userProfiles()
+            res.status(201).json({success:true,data:data})
+        }catch(err){
+            res.status(500).json({success:false,message:err.message})
+        }
     })
+
+    // app.post('/postImg/:id',auth,async (req,res) => {
+    //     try{
+    //         const data = await service.userPostImg({
+    //             img:req.body.img,
+    //             postId:req.params.id,
+    //             userId:req.user.id
+    //         })
+    //         res.status(201).json({data,message:'Post image added successfully!'})
+    //     }catch(err){
+    //         res.status(500).json({message:err.message})
+    //     }
+        
+    // })
 
     app.put('/updateProfile',auth,async(req,res) => {
         try{

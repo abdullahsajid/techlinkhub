@@ -77,23 +77,52 @@ class candidateRepository{
                     )
             FROM socialLinks sl 
             WHERE p.user_id = sl.user_id
-            ) AS socialLink
+            ) AS socialLink,
+            (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id' , cp.post_id,
+                    'content', cp.content,
+                    'createdAt',cp.createdAt,
+                    'postImg',cp.url,
+                    'userId',cp.userPost_id
+                        )
+                    )
+            FROM candidatepost cp
+            WHERE p.user_id = cp.userPost_id
+            ) AS candidatePosts
         FROM 
             profile p 
-        LEFT JOIN 
-            skills s ON p.user_id = s.user_id
-        LEFT JOIN 
-            socialLinks sl ON p.user_id = sl.user_id
         WHERE 
             p.user_id = ?
         `,[id])
         return profile[0]
     }
 
-    async post({content,userProfile,userId}){
-        const candidatePost = await this.db.query(`INSERT INTO candidatepost (content,userProfile_id,user_id) VALUES (?,?,?)`,[content,userProfile,userId])
+    async post({content,url,userId}){
+        const tlhPostImg = await cloudinary.v2.uploader.upload(url,{
+            folder:'tlhPost'
+        })
+        const publicId = tlhPostImg.public_id
+        const secureUrl = tlhPostImg.secure_url
+        const candidatePost = await this.db.query(`INSERT INTO candidatepost (content,url,public_id,userPost_id) VALUES (?,?,?,?)`,[content,secureUrl,publicId,userId])
         return candidatePost[0]
     }
+
+    async getProfiles(){
+        const profiles = await this.db.query('SELECT * FROM profile')
+        return profiles[0]
+    }
+
+    // async postImg({img,postId,userId}){
+    //     const tlhPostImg = await cloudinary.v2.uploader.upload(img,{
+    //         folder:'tlhPost'
+    //     })
+    //     const publicId = tlhPostImg.public_id
+    //     const secureUrl = tlhPostImg.secure_url
+    //     const imgs = await this.db.query(`INSERT INTO postimg (public_id,url,postImg__id,postImgUser_id) VALUES (?,?,?,?)`,
+    //     [publicId,secureUrl,postId,userId])
+    //     return imgs[0]
+    // }
 
     async updateProfile(data,updateData){
         let updateObject={}
