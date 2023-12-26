@@ -8,6 +8,7 @@ class candidateRepository{
         this.establishConnection()
     }
 
+
     async establishConnection(){
         try{
             this.db = await db_connection()
@@ -56,6 +57,8 @@ class candidateRepository{
     }
 
     async getProfile({id}){
+        // const likes = await this.db.query(`SELECT * FROM candidate_post_likes`)
+        // console.log(likes[0])
         const profile = await this.db.query(`
         SELECT 
             p.id,p.banner_url,p.avatar_url,p.name,p.bio,p.education,p.experience,p.about,
@@ -121,6 +124,10 @@ class candidateRepository{
     }
 
     async post({content,url,userId}){
+        if(url == null && !url){
+            const candidatePost = await this.db.query(`INSERT INTO candidatepost (content,userPost_id) VALUES (?,?)`,[content,userId])
+            return candidatePost[0]
+        }
         const tlhPostImg = await cloudinary.v2.uploader.upload(url,{
             folder:'tlhPost'
         })
@@ -176,10 +183,26 @@ class candidateRepository{
         return likes[0]
     }
 
-    async postLike({postId,userId}){
-        const like = await this.db.query(`INSERT INTO candidate_post_likes (userPost_id,usercandId) VALUES (?,?)`,[postId,userId])
-        return like[0]
+    async postLike({postId,userId,data}){
+        // let usercandId = userId
+        // console.log("userId",userId)
+        // console.log("user",data.candLike)
+        if(data.candLike == null && !data.candLike){
+            const like = await this.db.query(`INSERT INTO candidate_post_likes (userPost_id,usercandId) VALUES (?,?)`,[postId,userId])
+            return like[0]
+        }
+        const check = data.candLike.some(item => item.userId === userId)
+        // console.log("check: ",check)
+        if(check){
+            const like = await this.db.query(`DELETE FROM candidate_post_likes WHERE userPost_id =? AND usercandId = ?`,[postId,userId])
+            return like[0]
+        }else{
+            const like = await this.db.query(`INSERT INTO candidate_post_likes (userPost_id,usercandId) VALUES (?,?)`,[postId,userId])
+            return like[0]
+        }
     }
+
+    
 
     // async postImg({img,postId,userId}){
     //     const tlhPostImg = await cloudinary.v2.uploader.upload(img,{

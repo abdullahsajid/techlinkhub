@@ -81,7 +81,10 @@ class candidateService{
     }
 
     async userLike({postId,userId}){
-        const userLike = await this.repository.postLike({postId,userId})
+        const id = postId
+        const likes = await this.repository.getLikes({id})
+        const data = likes[0]
+        const userLike = await this.repository.postLike({postId,userId,data})
         return userLike
     }
 
