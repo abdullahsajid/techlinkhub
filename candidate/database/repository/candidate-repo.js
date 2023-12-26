@@ -96,7 +96,17 @@ class candidateRepository{
                                     )
                             FROM comments c 
                             WHERE c.IdPost = cp.post_id
-                            )
+                            ),
+                    "likes",(SELECT JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'id',candLike.id,
+                                'PostId',candLike.userPost_id,
+                                'userId',candLike.usercandId
+                                    )    
+                                )
+                            FROM candidate_post_likes candLike
+                            WHERE candLike.userPost_id = cp.post_id
+                            )      
                         )
                     )
             FROM candidatepost cp
@@ -147,6 +157,23 @@ class candidateRepository{
                 ) AS comments
             `,[id])
         return comment[0]
+    }
+
+    async getLikes({id}){
+        const likes = await this.db.query(`
+            SELECT 
+                (SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', candLike.id,
+                        'postId', candLike.userPost_id,
+                        'userId',candLike.usercandId
+                            )
+                        )
+                FROM candidate_post_likes candLike 
+                WHERE candLike.userPost_id = ?
+                ) AS candLike
+            `,[id])
+        return likes[0]
     }
 
     async postLike({postId,userId}){

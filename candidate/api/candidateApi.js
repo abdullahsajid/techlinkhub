@@ -110,7 +110,7 @@ module.exports = (app) => {
         }  
     })
 
-    app.post('/postLike/:id',auth, async (req,res) => {
+    app.get('/postLike/:id',auth, async (req,res) => {
         try {
             const data = await service.userLike({
                 postId:req.params.id,
@@ -120,7 +120,16 @@ module.exports = (app) => {
         } catch (error) {
             res.status(500).json({success:false,message:err.message})
         }
-        
+    })
+
+    app.get('/getlikes/:id', auth, async (req,res)=>{
+        try{
+            const id = req.params.id
+            const data = await service.getUserLikes({id})
+            res.status(201).json({success:true,data:data[0]})
+        }catch(err){
+            res.status(500).json({success:false,message:err.message})
+        }  
     })
 
     // app.post('/postImg/:id',auth,async (req,res) => {

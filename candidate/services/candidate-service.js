@@ -75,6 +75,11 @@ class candidateService{
         return comments
     }
 
+    async getUserLikes({id}){
+        const comments = await this.repository.getLikes({id})
+        return comments
+    }
+
     async userLike({postId,userId}){
         const userLike = await this.repository.postLike({postId,userId})
         return userLike
