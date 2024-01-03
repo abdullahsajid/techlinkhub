@@ -4,24 +4,37 @@ module.exports = (app) => {
     const service = new candidateService()
 
     app.post('/signup', async (req,res,next) => {
-        const [data] = await service.signUp({
+        const data = await service.signUp({
             email:req.body.email,
             password:req.body.password,
             name:req.body.name
         })
         const token = await service.getToken()
-        res.status(201).json({data:data[0],token})
+
+        if(data?.success === false){
+            return res.status(200).json({
+                data:data,message:"credential Wrong!"
+            })
+        }else{
+            return res.status(201).json({data:data,token})
+        }
     })
 
     app.post('/login',async (req,res) => {
-        const [data] = await service.login({
+        const data = await service.login({
             email:req.body.email,
             password:req.body.password
         })
         const token = await service.getToken()
-        res.status(200).json(
-            {data:data[0],token,message:"login successfully!"}
-        )
+        if(data?.success === false){
+            return res.status(200).json(
+                {data:data,message:"credential Wrong!"}
+            )
+        }else{
+            return res.status(200).json(
+                {data:data,token,message:"login successfully!"}
+            )
+        }
     })
     
     app.post('/createProfile',auth,async(req,res)=>{
@@ -132,19 +145,15 @@ module.exports = (app) => {
         }  
     })
 
-    // app.post('/postImg/:id',auth,async (req,res) => {
-    //     try{
-    //         const data = await service.userPostImg({
-    //             img:req.body.img,
-    //             postId:req.params.id,
-    //             userId:req.user.id
-    //         })
-    //         res.status(201).json({data,message:'Post image added successfully!'})
-    //     }catch(err){
-    //         res.status(500).json({message:err.message})
-    //     }
-        
-    // })
+    app.get('/getLoginUserPost',auth,async (req,res) => {
+        try{
+            const id = req.user.id
+            const data = await service.getLoginUserPost({id})
+            res.status(201).json({success:true,data:data[0]})
+        }catch(err){
+            res.status(500).json({success:false,message:err.message})
+        }
+    })
 
     app.put('/updateProfile',auth,async(req,res) => {
         try{

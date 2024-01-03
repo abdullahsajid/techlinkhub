@@ -77,6 +77,29 @@ module.exports = (app) => {
         res.status(201).json({data})
     })
 
+
+    app.post('/createJob/:id',auth, async (req,res) => {
+        try{
+            const data = await service.userCreateJob({
+                title:req.body.title,
+                category:req.body.category,
+                location:req.body.location,
+                type:req.body.type,
+                desc:req.body.desc,
+                resp:req.body.resp,
+                requirement:req.body.requirement,
+                qual:req.body.qual,
+                skill:JSON.stringify(req.body.skill),
+                orgId:req.params.id,
+                userId:req.user.id
+            })
+            res.status(201).json({success:false,message:"successfully created!",data:data})
+        }catch(err){
+            res.status(500).json({success:false,message:err.message})
+        }
+    })
+
+
     app.put('/updateProfile',auth,async(req,res) => {
         try{
             const id = req.user.id

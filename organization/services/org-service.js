@@ -49,6 +49,11 @@ class candidateService{
         return getPost
     }
 
+    async userCreateJob({title,category,location,type,desc,resp,requirement,qual,skill,orgId,userId}){
+        const job = await this.repository.createJob({title,category,location,type,desc,resp,requirement,qual,skill,orgId,userId})
+        return job
+    }
+
     async updateProfileDetails(id,updateData){
         const profile = await this.repository.getProfile({id})
         const data = profile[0]

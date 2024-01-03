@@ -11,27 +11,38 @@ class candidateService{
     async signUp(userData){
         const {email,password,name} = userData
         const userAdded = await this.repository.createUser({email,password,name})
-        if(userAdded && userAdded[0] && userAdded[0][0] && userAdded[0][0].id){
-        let tokenId =  userAdded[0][0].id
-        this.token = await jwt.sign(
-            {email:email,id:tokenId},
-            process.env.JWT_AUTH,
-            {expiresIn:'24h'}
-        )
-        return userAdded}
+    
+        if(userAdded?.success === false){
+            return userAdded
+        }
+        else if(userAdded && userAdded[0] && userAdded[0][0] && userAdded[0][0].id){
+           
+            let tokenId =  userAdded[0][0].id
+            this.token = await jwt.sign(
+                {email:email,id:tokenId},
+                process.env.JWT_AUTH,
+                {expiresIn:'24h'}
+            )
+            return userAdded[0][0]
+        }
     }
 
     async login(userData){
         const {email,password} = userData
         const loginData = await this.repository.findUser({email,password})
-        if(loginData && loginData[0] && loginData[0][0] && loginData[0][0].id){
+        // console.log(loginData)
+        if(loginData.success === false){
+            return loginData
+        }
+        else if(loginData && loginData[0] && loginData[0][0] && loginData[0][0].id){
             let tokenId =  loginData[0][0].id
             this.token = await jwt.sign(
                 {id:tokenId,email:email},
                 process.env.JWT_AUTH,
                 {expiresIn:'24h'}
             )
-        return loginData}
+            return loginData[0][0]
+        }
     }
 
     async profile(profileData){
@@ -86,6 +97,11 @@ class candidateService{
         const data = likes[0]
         const userLike = await this.repository.postLike({postId,userId,data})
         return userLike
+    }
+
+    async getLoginUserPost({id}){
+        const data = await this.repository.getUserPost({id})
+        return data
     }
 
     // async userPostImg({img,postId,userId}){

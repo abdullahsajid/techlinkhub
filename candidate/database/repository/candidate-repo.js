@@ -19,16 +19,40 @@ class candidateRepository{
     }
 
     async createUser({email,password,name}){
-        const userCredential = await this.db.query(`INSERT INTO signup (email,password,name) VALUES (?,?,?)`
-        ,[email,password,name])
-
-        return userCredential
+        const messageName = {message:"Name already taken!",success:false}
+        const messageEmail = {message:"email already exist!",success:false}
+        const checkUser = await this.db.query(`SELECT * FROM signup WHERE name = ?`,[name])
+        if(checkUser[0]?.length === 0){
+            const validateEmail = await this.db.query(`SELECT * FROM signup WHERE email = ?`,[email])
+            if(validateEmail[0].length === 0){
+                const userCredential = await this.db.query(`INSERT INTO signup (email,password,name) VALUES (?,?,?)`
+                ,[email,password,name])
+                return userCredential
+            }else if(validateEmail[0][0]?.email === email){
+                return messageEmail
+            }
+        }
+        else if(checkUser[0][0]?.name === name){
+            return messageName
+        }
+        
     }
 
     async findUser({email,password}){
-        const userData = await this.db.query(`SELECT * FROM signup WHERE email = ? && password = ?`
-        ,[email,password])
-        return userData
+        const message = {message:"invalid email",success:false}
+        const messagepass = {message:"incorrect password!",success:false}
+        const validateEmail = await this.db.query(`SELECT * FROM signup WHERE email = ?`,[email])
+        if(!validateEmail[0][0]?.email){
+            return message
+        }else if(validateEmail[0][0]?.email === email){
+            const validatePass = await this.db.query(`SELECT * FROM signup WHERE email = ? && password = ?`,[email,password])
+            if(!validatePass[0][0]?.password){
+                return messagepass
+            }else if(validatePass[0][0]?.password === password){
+                return validatePass
+            }
+        }
+        
     }
 
     async createProfile({name,bio,about,education,banner,avatar,experience,userId}){
@@ -202,6 +226,47 @@ class candidateRepository{
         }
     }
 
+
+    async getUserPost({id}){
+        const post = await this.db.query(`
+            SELECT
+                (SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id' , cp.post_id,
+                        'content', cp.content,
+                        'createdAt',cp.createdAt,
+                        'postImg',cp.url,
+                        'userId',cp.userPost_id,
+                        "comments",(SELECT JSON_ARRAYAGG(
+                                    JSON_OBJECT(
+                                        'id', c.comment_id,
+                                        'comment', c.comment,
+                                        'postId',c.IdPost,
+                                        "userId",c.userComm_id,
+                                        'createdAt',c.createdAt
+                                            )
+                                        )
+                                FROM comments c 
+                                WHERE c.IdPost = cp.post_id
+                                ),
+                        "likes",(SELECT JSON_ARRAYAGG(
+                                JSON_OBJECT(
+                                    'id',candLike.id,
+                                    'PostId',candLike.userPost_id,
+                                    'userId',candLike.usercandId
+                                        )    
+                                    )
+                                FROM candidate_post_likes candLike
+                                WHERE candLike.userPost_id = cp.post_id
+                                )      
+                            )
+                        )
+                FROM candidatepost cp
+                WHERE cp.userPost_id = ?
+                ) AS loginUserPosts
+        `,[id])
+        return post[0]
+    }
     
 
     // async postImg({img,postId,userId}){
@@ -214,7 +279,7 @@ class candidateRepository{
     //     [publicId,secureUrl,postId,userId])
     //     return imgs[0]
     // }
-
+    
     async updateProfile(data,updateData){
         let updateObject={}
         if(data.name !== updateData.name){
@@ -243,14 +308,14 @@ class candidateRepository{
             updateObject.banner_url = profileBanner
         }
         if(data.avatar_url !== updateData.avatar){
-            const extract_id = await data.banner_url.split('/').pop().split('.')[0]
+            const extract_id = await data.avatar_url.split('/').pop().split('.')[0]
             const  public_id =  `tlkavatar/${extract_id}`
             await cloudinary.v2.uploader.destroy(public_id)
             const tlhavatar = await cloudinary.v2.uploader.upload(updateData.avatar,{
                 folder:'tlkavatar'
             })
             const profileAvatar =  tlhavatar.secure_url
-            updateObject.banner_url = profileAvatar
+            updateObject.avatar_url = profileAvatar
         }
         const key = Object.keys(updateObject)
         const values = Object.values(updateObject)

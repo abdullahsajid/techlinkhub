@@ -112,6 +112,12 @@ class candidateRepository{
         return post[0]
     }
 
+    async createJob({title,category,location,type,desc,resp,requirement,qual,skill,orgId,userId}){
+        const job = await this.db.query(`INSERT INTO createjob (cj_title,cj_category,cj_location,cj_type,cj_description,cj_responsibility,cj_requirement,cj_qualification,cj_skills,cj_orgProId,cj_user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)`
+        ,[title,category,location,type,desc,resp,requirement,qual,skill,orgId,userId])
+        return job[0]
+    }
+
     async updateProfile(data,updateData){
         let updateObject={}
         if(data.org_name !== updateData.name){
@@ -146,14 +152,14 @@ class candidateRepository{
             updateObject.banner_url = profileBanner
         }
         if(data.avatar_url !== updateData.avatar){
-            const extract_id = await data.banner_url.split('/').pop().split('.')[0]
+            const extract_id = await data.avatar_url .split('/').pop().split('.')[0]
             const  public_id =  `tlkavatar/${extract_id}`
             await cloudinary.v2.uploader.destroy(public_id)
             const tlhavatar = await cloudinary.v2.uploader.upload(updateData.avatar,{
                 folder:'tlkavatar'
             })
             const profileAvatar =  tlhavatar.secure_url
-            updateObject.banner_url = profileAvatar
+            updateObject.avatar_url = profileAvatar
         }
         const key = Object.keys(updateObject)
         const values = Object.values(updateObject)
