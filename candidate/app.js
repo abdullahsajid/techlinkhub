@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const app = express()
 const candidateApi = require('./api/candidateApi')
+const resumeApi = require('./api/resumeApi')
 const {db_connection} = require('./database/db_index')
 const cloudinary = require('cloudinary')
 
@@ -12,6 +13,7 @@ const corsOptions = {
     optionSuccessStatus:200,
     methods:["GET","POST","PUT","DELETE"]
 }
+
 app.use(cookieParser())
 app.use(cors(corsOptions))
 app.use(express.json({limit:'50mb'}))
@@ -19,6 +21,7 @@ app.use(express.urlencoded({limit:'50mb', extended:true }))
 
 db_connection()
 candidateApi(app)
+resumeApi(app)
 
 app.use('/',(req,res)=>{
     res.json({message:"listen from candidate sever!"})    
@@ -33,6 +36,8 @@ cloudinary.config({
 app.listen(8001, () => {
     console.log("Connection to server is working fine!")
 })
+
+
 
 
 

@@ -1,5 +1,6 @@
 const candidateService = require('../services/candidate-service')
 const auth = require('./middleware/auth')
+
 module.exports = (app) => {
     const service = new candidateService()
 
@@ -177,6 +178,7 @@ module.exports = (app) => {
             res.status(500).json({message:err.message})
         }
     })
+
 
     app.get("/logout",(req,res) => {
         try{

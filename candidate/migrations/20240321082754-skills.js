@@ -19,17 +19,16 @@ exports.up = function(db,callback) {
     CREATE TABLE skills(
       id INT PRIMARY KEY AUTO_INCREMENT,
       skill_name VARCHAR(255),
-      user_id INT NOT NULL,
+      user_id INT,
+      resume_id INT,
+      FOREIGN KEY (resume_id) REFERENCES resume(id) ON DELETE CASCADE
       FOREIGN KEY (user_id) REFERENCES signup(id) ON DELETE CASCADE
     )
   `,callback)
 };
 
-exports.down = function(db, callback) {
-  db.runSql(`ALTER TABLE skills DROP FOREIGN KEY user_id`, function(err) {
-    if (err) return callback(err);
-    db.dropTable('skills', callback);
-  });
+exports.down = function(db,callback) {
+  db.dropTable
 };
 
 exports._meta = {

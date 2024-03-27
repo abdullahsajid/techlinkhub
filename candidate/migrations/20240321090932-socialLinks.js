@@ -20,7 +20,9 @@ exports.up = function(db,callback) {
       id INT PRIMARY KEY AUTO_INCREMENT,
       social_name VARCHAR(255),
       link VARCHAR(255),
-      user_id INT NOT NULL,
+      user_id INT,
+      resume_id INT,
+      FOREIGN KEY (resume_id) REFERENCES resume(id) ON DELETE CASCADE,
       FOREIGN KEY (user_id) REFERENCES signup(id) ON DELETE CASCADE
     )
   `,callback)
