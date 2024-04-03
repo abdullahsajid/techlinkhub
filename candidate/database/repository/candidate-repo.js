@@ -323,7 +323,8 @@ class CandidateRepository{
         }
         const key = Object.keys(updateObject)
         const values = Object.values(updateObject)
-        const setKeys = key.map(key => `${key} = ?`).join(', ')
+        const setKeys = key.map(key => `${key} = ?`).join(', ') 
+        
     
         const updateItems = await this.db.query(`UPDATE profile SET ${setKeys} WHERE id = ?`,[...values,data.id])
         return updateItems

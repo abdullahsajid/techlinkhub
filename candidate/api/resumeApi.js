@@ -29,6 +29,31 @@ module.exports = (app) => {
     }
   })
 
+  app.delete('/deleteExp/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.delExp({id:req.params.id})
+      res.status(200).json({data,message:"delete successfully!"})
+    }
+    catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.put('/updateResume',auth,async (req,res) => {
+    try{
+      const id = req.user.id
+      const data = await resumeService.updateDetails(id,{
+        name:req.body.name,
+        description:req.body.description,
+        title:req.body.title,
+        img:req.body.img
+      })
+      res.status(200).json({data,message:"update successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
   app.post("/resumeEdu", auth, async (req, res) => {
     try {
       const data = await resumeService.resumeEdu({
@@ -53,6 +78,32 @@ module.exports = (app) => {
       const data = await resumeService.getResumeEdu({id:req.user.id})
       res.status(200).json({data,message:"retrieve successfully!"})
     }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.put('/updateEdu/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateResumeEdu(req.params.id,{
+        program_name:req.body.program_name,
+        institution_name:req.body.institution_name,
+        start_date:req.body.start_date,
+        end_date:req.body.end_date,
+        description:req.body.description
+      })
+      res.status(200).json({data,message:"update successfully!"})
+    }
+    catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.delete('/deleteEdu/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.deleteResumeEdu({id:req.params.id})
+      res.status(200).json({data,message:"delete successfully!"})
+    }
+    catch(err){
         res.status(500).json({message:err.message})
     }
   })
@@ -86,6 +137,23 @@ module.exports = (app) => {
     }
   })
 
+  app.put('/updateExp/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateResumeExp(req.params.id,{ 
+        job_title:req.body.job_title,
+        company_name:req.body.company_name,
+        start_date:req.body.start_date,
+        end_date:req.body.end_date,
+        description:req.body.description,
+        job_type:req.body.job_type
+      })  
+      res.status(200).json({data,message:"update successfully!"})
+    }
+    catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
   app.post("/resumeCert", auth, async (req, res) => {
     try {
       const data = await resumeService.resumeCertification({
@@ -105,6 +173,15 @@ module.exports = (app) => {
       res.status(500).json({ message: err.message });
     }
   });
+
+  app.get('/getCert',auth,async (req,res) => {
+    try{
+      const data = await resumeService.getResumeCertificate({id:req.user.id})
+      res.status(200).json({data,message:"retrieve successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
 
   app.post("/resumePersonalProj", auth, async (req, res) => {
     try {
@@ -163,6 +240,19 @@ module.exports = (app) => {
     }
   })
 
+  app.put('/updateContact',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateContact(req.user.id,{
+        contact_address:req.body.contact_address,
+        contact_email:req.body.contact_email,
+        contact_phone:req.body.contact_phone
+      })
+      res.status(200).json({data,message:"update successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
   app.post("/resumeInterest", auth, async (req, res) => {
     try {
       const data = await resumeService.resumeInterest({
@@ -178,6 +268,24 @@ module.exports = (app) => {
     }
   });
 
+  app.get('/getInterest',auth,async (req,res) => {
+    try{
+      const data = await resumeService.getInterest({id:req.user.id})
+      res.status(200).json({data,message:"retrieve successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.put('/updateInterest',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateInterest({interest_name:req.body.interest_name,user_id:req.user.id})
+      res.status(200).json({data,message:"update successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
   app.post("/resumeLang",auth , async (req,res) => {
     try{
         const data = await resumeService.resumeLang({
@@ -186,6 +294,55 @@ module.exports = (app) => {
             user_id:req.user.id
         })
         res.status(201).json({data,message:"resume language created successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.get('/getLang',auth,async (req,res) => {
+    try{
+      const data = await resumeService.getLang({id:req.user.id})
+      res.status(200).json({data,message:"retrieve successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.put('/updateLang',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateLang({lang_name:req.body.lang_name,user_id:req.user.id})
+      res.status(200).json({data,message:"update successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.post("/resumeSkill",auth , async (req,res) => {
+    try{
+        const data = await resumeService.resumeSkill({
+            skill_name:req.body.skill_name,
+            resume_id:req.body.resume_id,
+            user_id:req.user.id
+        })
+        res.status(201).json({data,message:"resume language created successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.get('/getSkill',auth,async (req,res) => {
+    try{
+      const data = await resumeService.getSkill({id:req.user.id})
+      res.status(200).json({data,message:"retrieve successfully!"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.put('/updateSkill',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateResumeSkills({skill_name:req.body.skill_name,user_id:req.user.id})
+      res.status(200).json({data,message:"update successfully!"})
     }catch(err){
         res.status(500).json({message:err.message})
     }

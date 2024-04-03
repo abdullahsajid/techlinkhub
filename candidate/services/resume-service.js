@@ -21,6 +21,13 @@ class ResumeService {
     return getResume
   }
 
+  async updateDetails(id,updateData){
+    const getResume = await this.resumeRepo.getResumeHeader({id})
+    const data = getResume[0]
+    const update = await this.resumeRepo.updateResume(data,updateData)
+    return update
+  }
+
   async resumeEdu({
     program_name,
     institution_name,
@@ -47,6 +54,18 @@ class ResumeService {
     return getEdu
   }
 
+  async updateResumeEdu(id,updateData){
+    const getResume = await this.resumeRepo.getResumeEduFindById({id})
+    const data = getResume[0]
+    const update = await this.resumeRepo.updateEdu(data,updateData)
+    return update
+  }
+
+  async deleteResumeEdu({id}) {
+    const getResume = await this.resumeRepo.deleteEdu({id})
+    return getResume
+  }
+  
   async resumeExp({
     job_title,
     company_name,
@@ -75,6 +94,18 @@ class ResumeService {
     return getExp
   }
 
+  async updateResumeExp(id,updateData){
+    const getResume = await this.resumeRepo.getResumeExpFindById({id})
+    const data = getResume[0]
+    const update = await this.resumeRepo.updateExp(data,updateData)
+    return update
+  }
+
+  async delExp({id}){
+    const getResume = await this.resumeRepo.deleteExp({id})
+    return getResume
+  }
+
   async resumeCertification({
     cert_name,
     cert_description,
@@ -96,6 +127,11 @@ class ResumeService {
       user_id,
     });
     return resumeCert;
+  }
+
+  async getResumeCertificate({id}){
+    const getCert = await this.resumeRepo.getResumeCert({id})
+    return getCert
   }
 
   async resumePersonalProj({
@@ -120,8 +156,8 @@ class ResumeService {
   }
 
   async getResumePersonalProj({id}){
-    const getExp = await this.resumeRepo.getResumeProj({id})
-    return getExp
+    const getProj = await this.resumeRepo.getResumeProj({id})
+    return getProj
   }
 
   async resumeContact({
@@ -142,8 +178,15 @@ class ResumeService {
   }
 
   async getResumeContacts({id}){
-    const getExp = await this.resumeRepo.getResumeContact({id})
-    return getExp
+    const getContact = await this.resumeRepo.getResumeContact({id})
+    return getContact
+  }
+
+  async updateContact(id,updateData){
+    const getResume = await this.resumeRepo.getResumeContact({id})
+    const data = getResume[0]
+    const update = await this.resumeRepo.updateResumeContact(data,updateData)
+    return update
   }
 
   async resumeInterest({interest_name, resume_id, user_id}) {
@@ -151,11 +194,45 @@ class ResumeService {
     return interest
   }
 
+  async getInterest({id}) {
+    const interest = await this.resumeRepo.getResumeInterest({id})
+    return interest
+  }
+
+  async updateInterest({interest_name,user_id}) {
+    const interest = await this.resumeRepo.updateResumeInterest({interest_name,user_id})
+    return interest
+  }
+
   async resumeLang({lang_name, resume_id, user_id}) {
     const lang = await this.resumeRepo.createResumeLang({lang_name, resume_id, user_id})
     return lang
   }
-  
+
+  async getLang({id}) {
+    const lang = await this.resumeRepo.getResumeLang({id})
+    return lang
+  }
+
+  async updateLang({lang_name,user_id}) {
+    const lang = await this.resumeRepo.updateResumeLang({lang_name,user_id})
+    return lang
+  }
+
+  async resumeSkill({skill_name, resume_id,user_id}){
+    const skill = await this.resumeRepo.createResumeSkill({skill_name, resume_id,user_id})
+    return skill
+  }
+
+  async getSkill({id}){
+    const skill = await this.resumeRepo.getResumeSkill({id})
+    return skill
+  }
+
+  async updateResumeSkills({skill_name,user_id}){
+    const skill = await this.resumeRepo.updateSkills({skill_name,user_id})
+    return skill
+  }
 
 }
 
