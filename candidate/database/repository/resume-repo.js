@@ -95,9 +95,10 @@ class Resume {
 
   async getResumeEduFindById({ id }) {
     const getResumeEduById = await this.candidate.db.query(
-      `SELECT * FROM resume_edu WHERE res_edu_id = ?`,[id]
-    )
-    return getResumeEduById[0]
+      `SELECT * FROM resume_edu WHERE res_edu_id = ?`,
+      [id]
+    );
+    return getResumeEduById[0];
   }
 
   async updateEdu(data, updateData) {
@@ -128,7 +129,7 @@ class Resume {
     return updateEdu;
   }
 
-  async deleteEdu({id}) {
+  async deleteEdu({ id }) {
     const deleteEdu = await this.candidate.db.query(
       `DELETE FROM resume_edu WHERE res_edu_id = ?`,
       [id]
@@ -211,7 +212,7 @@ class Resume {
     return updateExp;
   }
 
-  async deleteExp({id}) {
+  async deleteExp({ id }) {
     const deleteExp = await this.candidate.db.query(
       `DELETE FROM resume_exp WHERE res_exp_id = ?`,
       [id]
@@ -255,6 +256,50 @@ class Resume {
     return getCert[0];
   }
 
+  async getResumeCertFindById({ id }) {
+    const getResumeCertById = await this.candidate.db.query(
+      `SELECT * FROM resume_certificate WHERE certifacte_id = ?`,
+      [id]
+    );
+    return getResumeCertById[0];
+  }
+
+  async updateCert(data, updateData) {
+    let updateOjt = {};
+    if (data.cert_name !== updateData.cert_name) {
+      updateOjt.cert_name = updateData.cert_name;
+    }
+    if (data.cert_description !== updateData.cert_description) {
+      updateOjt.cert_description = updateData.cert_description;
+    }
+    if (data.cert_link !== updateData.cert_link) {
+      updateOjt.cert_link = updateData.cert_link;
+    }
+    if (data.cert_startDate !== updateData.cert_startDate) {
+      updateOjt.cert_startDate = updateData.cert_startDate;
+    }
+    if (data.cert_endDate !== updateData.cert_endDate) {
+      updateOjt.cert_endDate = updateData.cert_endDate;
+    }
+    
+    const key = Object.keys(updateOjt);
+    const val = Object.values(updateOjt);
+    const setKeys = key.map((key) => `${key} = ?`).join(", ");
+    const updateCert = await this.candidate.db.query(
+      `UPDATE resume_certificate SET ${setKeys} WHERE certifacte_id = ?`,
+      [...val, data.certifacte_id]
+    );
+    return updateCert;
+  }
+
+  async deleteCert({ id }) {
+    const deleteCert = await this.candidate.db.query(
+      `DELETE FROM resume_certificate WHERE certifacte_id = ?`,
+      [id]
+    );
+    return deleteCert;
+  }
+
   async createResumePersonalProj({
     proj_name,
     proj_description,
@@ -285,6 +330,51 @@ class Resume {
       [id]
     );
     return getProj[0];
+  }
+
+  async getResumeProjFindById({ id }) {
+    const getResumeProjById = await this.candidate.db.query(
+      `SELECT * FROM resume_personal_proj WHERE res_proj_id = ?`,
+      [id]
+    );
+    return getResumeProjById[0];
+  }
+
+  async updateProj(data, updateData) {
+    let updateOjt = {};
+    if (data.proj_name !== updateData.proj_name) {
+      updateOjt.proj_name = updateData.proj_name;
+    }
+    if (data.proj_description !== updateData.proj_description) {
+      updateOjt.proj_description = updateData.proj_description;
+    }
+    if (data.proj_link !== updateData.proj_link) {
+      updateOjt.proj_link = updateData.proj_link;
+    }
+    if (data.start_date !== updateData.start_date) {
+      updateOjt.start_date = updateData.start_date;
+    }
+    if (data.end_date !== updateData.end_date) {
+      updateOjt.end_date = updateData.end_date;
+    }
+
+    const key = Object.keys(updateOjt);
+    const val = Object.values(updateOjt);
+    const setKeys = key.map((key) => `${key} = ?`).join(", ");
+
+    const updateProj = await this.candidate.db.query(
+      `UPDATE resume_personal_proj SET ${setKeys} WHERE res_proj_id = ?`,
+      [...val, data.res_proj_id]
+    );
+    return updateProj;
+  }
+
+  async deleteProj({ id }) {
+    const deleteProj = await this.candidate.db.query(
+      `DELETE FROM resume_personal_proj WHERE res_proj_id = ?`,
+      [id]
+    );
+    return deleteProj;
   }
 
   async createResumeContact({

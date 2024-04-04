@@ -183,6 +183,34 @@ module.exports = (app) => {
     }
   })
 
+  app.put('/updateCert/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateResumeCert(req.params.id,{
+        cert_name:req.body.cert_name,
+        cert_description:req.body.cert_description,
+        cert_link:req.body.cert_link,
+        cert_startDate:req.body.cert_startDate,
+        cert_endDate:req.body.cert_endDate,
+        cert_img:req.body.cert_img
+      })
+      res.status(200).json({data,message:"update successfully!"})
+    }
+    catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.delete('/deleteCert/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.delCert({id:req.params.id})
+      res.status(200).json({data,message:"delete successfully!"})
+    }
+    catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+
   app.post("/resumePersonalProj", auth, async (req, res) => {
     try {
       const data = await resumeService.resumePersonalProj({
@@ -210,6 +238,32 @@ module.exports = (app) => {
       const data = await resumeService.getResumePersonalProj({id:req.user.id})
       res.status(200).json({data,message:"retrieve successfully!"})
     }catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.put('/updateProj/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateResumeProj(req.params.id,{
+        proj_name:req.body.proj_name,
+        proj_description:req.body.proj_description,
+        proj_link:req.body.proj_link,
+        start_date:req.body.start_date,
+        end_date:req.body.end_date
+      })
+      res.status(200).json({data,message:"update successfully!"})
+    }
+    catch(err){
+        res.status(500).json({message:err.message})
+    }
+  })
+
+  app.delete('/deleteProj/:id',auth,async (req,res) => {
+    try{
+      const data = await resumeService.delProj({id:req.params.id})
+      res.status(200).json({data,message:"delete successfully!"})
+    }
+    catch(err){
         res.status(500).json({message:err.message})
     }
   })

@@ -134,6 +134,18 @@ class ResumeService {
     return getCert
   }
 
+  async updateResumeCert(id,updateData){
+    const getResume = await this.resumeRepo.getResumeCertFindById({id})
+    const data = getResume[0]
+    const update = await this.resumeRepo.updateCert(data,updateData)
+    return update
+  }
+
+  async delCert({id}){
+    const getResume = await this.resumeRepo.deleteCert({id})
+    return getResume
+  }
+
   async resumePersonalProj({
     proj_name,
     proj_description,
@@ -158,6 +170,18 @@ class ResumeService {
   async getResumePersonalProj({id}){
     const getProj = await this.resumeRepo.getResumeProj({id})
     return getProj
+  }
+
+  async updateResumeProj(id,updateData){
+    const getResume = await this.resumeRepo.getResumeProjFindById({id})
+    const data = getResume[0]
+    const update = await this.resumeRepo.updateProj(data,updateData)
+    return update
+  }
+
+  async delProj({id}){
+    const getResume = await this.resumeRepo.deleteProj({id})
+    return getResume
   }
 
   async resumeContact({
