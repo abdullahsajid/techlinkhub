@@ -402,4 +402,26 @@ module.exports = (app) => {
     }
   })
 
+  app.post("/setTemplates",auth,async (req,res) => {
+    try{
+      const data = await resumeService.ResumeTemplate({
+        template_name:req.body.template_name,
+        resume_id:req.body.resume_id,
+        user_id:req.user.id
+      })
+      res.status(201).json({data,message:"template created successfully!"})
+    }catch(err){
+      res.status(500).json({message:err.message})
+    }
+  })
+
+  app.get('/myResume/:username',async (req,res) => {
+    try{
+      const data = await resumeService.ResumeData({name:req.params.username})
+      res.status(200).json({data,message:"retrieve successfully!"})
+    }catch(err){
+      res.status(500).json({message:err.message})
+    }
+  })
+
 };

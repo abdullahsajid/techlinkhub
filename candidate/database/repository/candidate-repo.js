@@ -38,8 +38,7 @@ class CandidateRepository{
         }
         else if(checkUser[0][0]?.name === name){
             return messageName
-        }
-        
+        } 
     }
 
     async findUser({email,password}){

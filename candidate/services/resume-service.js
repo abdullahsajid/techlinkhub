@@ -258,6 +258,18 @@ class ResumeService {
     return skill
   }
 
+  async ResumeTemplate({template_name, resume_id, user_id}){
+    const template = await this.resumeRepo.SetResumeTemplate({template_name, resume_id, user_id})
+    return template
+  }
+
+  async ResumeData({name}){
+    const data = await this.resumeRepo.getUserByName({name})
+    const allData = data[0].id
+    const templateData = await this.resumeRepo.getResumeTemplate(allData)
+    return templateData
+  }
+
 }
 
 module.exports = ResumeService;
