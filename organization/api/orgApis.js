@@ -1,7 +1,7 @@
-const candidateService = require('../services/org-service')
+const OrgService = require('../services/org-service')
 const auth = require('./middleware/auth')
 module.exports = (app) => {
-    const service = new candidateService()
+    const service = new OrgService()
 
     app.post('/createOrgProfile',auth,async(req,res)=>{
         const data = await service.profile({

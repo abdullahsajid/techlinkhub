@@ -1,10 +1,10 @@
-const candidateRepository = require('../database/repository/org-repo')
+const OrgRepository = require('../database/repository/org-repo')
 const jwt = require('jsonwebtoken')
 
 //business logic
-class candidateService{
+class OrgService{
     constructor(){
-        this.repository = new candidateRepository
+        this.repository = new OrgRepository
     }
 
     async profile(profileData){
@@ -62,4 +62,4 @@ class candidateService{
     }
 }
 
-module.exports = candidateService
+module.exports = OrgService

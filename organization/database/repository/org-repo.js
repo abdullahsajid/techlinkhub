@@ -1,11 +1,15 @@
 const db_connection = require('../connection')
 const cloudinary = require('cloudinary')
 //database operation
-class candidateRepository{
+class OrgRepository{
     
     constructor(){
-        this.db = null
-        this.establishConnection()
+        if(!OrgRepository.instance){
+            this.db = null
+            this.establishConnection()
+            OrgRepository.instance = this
+        }
+        return OrgRepository.instance
     }
 
     async establishConnection(){
@@ -171,7 +175,7 @@ class candidateRepository{
 
 }
 
-module.exports = candidateRepository
+module.exports = OrgRepository
 
 
 

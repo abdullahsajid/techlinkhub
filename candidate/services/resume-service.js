@@ -263,6 +263,11 @@ class ResumeService {
     return template
   }
 
+  async updateTemplate({template_name, id }){
+    const template = await this.resumeRepo.updateResumeTemplate({template_name, id })
+    return template
+  }
+
   async ResumeData({name}){
     const data = await this.resumeRepo.getUserByName({name})
     const allData = data[0].id

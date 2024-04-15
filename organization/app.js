@@ -5,7 +5,7 @@ const app = express()
 const cloudinary = require('cloudinary')
 const {db_connection} = require('./database/db_index')
 const orgApis = require('./api/orgApis')
-
+const AssessmentApis = require('./api/AssessmentApis')
 
 const corsOptions = {
     origin:['http://localhost:3000'], 
@@ -20,7 +20,7 @@ app.use(express.urlencoded({limit:'50mb', extended:true }))
 
 db_connection()
 orgApis(app)
-
+AssessmentApis(app)
 
 app.get('/',(req,res)=>{
     res.status(200).json({

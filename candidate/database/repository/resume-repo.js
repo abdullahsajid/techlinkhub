@@ -378,7 +378,6 @@ class Resume {
     const val = Object.values(selectItem);
     const setKeys = key.map((key) => `${key} = ?`).join(", ");
 
-    console.log("id => ",user_id);
 
     const project = await this.candidate.db.query(
       `INSERT INTO resume_personal_proj SET ${setKeys}, resume_id = ?, user_id = ?`,
@@ -603,6 +602,14 @@ class Resume {
     return template;
   }
 
+  async updateResumeTemplate({ template_name, id }) {
+    const template = await this.candidate.db.query(
+      `UPDATE resume_template SET template_name = ? WHERE template_id = ?`,
+      [template_name, id]
+    );
+    return template;
+  }
+
   async getUserByName({ name }) {
     const user = await this.candidate.db.query(
       `SELECT * FROM signup WHERE name = ?`,
@@ -616,6 +623,7 @@ class Resume {
       `SELECT 
           JSON_ARRAYAGG(
             JSON_OBJECT(
+                'template_id', rt.template_id,
                 'template_name', rt.template_name
                 ) 
           ) AS resumeTemplate,

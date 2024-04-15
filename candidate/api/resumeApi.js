@@ -415,6 +415,15 @@ module.exports = (app) => {
     }
   })
 
+  app.put('/updateTemplate',auth,async (req,res) => {
+    try{
+      const data = await resumeService.updateTemplate({template_name:req.body.template_name,id:req.body.id})
+      res.status(200).json({data,message:"update successfully!"})
+    }catch(err){
+      res.status(500).json({message:err.message})
+    }
+  })
+
   app.get('/myResume/:username',async (req,res) => {
     try{
       const data = await resumeService.ResumeData({name:req.params.username})
