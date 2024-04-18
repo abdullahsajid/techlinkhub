@@ -11,9 +11,11 @@ class SkillAssessment {
       [st_type, user_id]
     );
     let id = skill_type[0].insertId;
-    if(skill_type[0].insertId){
+    if (skill_type[0].insertId) {
       const getData = await this.org.db.query(
-        `SELECT * FROM skill_type WHERE st_id = ?`,[id])
+        `SELECT * FROM skill_type WHERE st_id = ?`,
+        [id]
+      );
       return getData[0];
     }
   }
@@ -45,7 +47,11 @@ class SkillAssessment {
       `INSERT INTO scores (score,badge,skillType,user_id) VALUES (?,?,?,?)`,
       [cal, badge, skill_id, user_id]
     );
-    return query[0];
+    const insertedData = await this.org.db.query(
+      `SELECT * FROM scores WHERE id = ?`,
+      [query[0].insertId]
+    );
+    return insertedData[0];
   }
 
   async getMcqs(id) {
@@ -76,6 +82,32 @@ class SkillAssessment {
       [id]
     );
     return getData[0];
+  }
+
+  async getSkillType() {
+    const data = await this.org.db.query(`SELECT * FROM skill_type`);
+    return data[0];
+  }
+
+  async getBadge() {
+    const data = await this.org.db.query(
+      `SELECT 
+          sc.*,
+        (
+          SELECT JSON_ARRAYAGG(
+              JSON_OBJECT(
+                  'st_id', st.st_id,
+                  'skill', st.st_type
+              )
+          )
+          FROM skill_type st
+          WHERE sc.skillType = st.st_id
+        ) AS skillTypes 
+      FROM 
+        scores sc
+      `
+    );
+    return data[0];
   }
 }
 

@@ -25,7 +25,7 @@ module.exports = (app) => {
         });
     })
 
-    app.get('/calculateScore',auth, async (req,res) => {
+    app.post('/calculateScore',auth, async (req,res) => {
         const optionPayload = req.body.optionPayload;
         const user_id = req.user.id;
         const skill_id = req.body.skill_id;
@@ -36,12 +36,28 @@ module.exports = (app) => {
         })
     })
 
-    app.get('/getmcqs',auth, async (req,res) => {
-        const id = req.body.id;
+    app.get('/getmcqs/:id',auth, async (req,res) => {
+        const id = req.params.id;
         const data = await skillAssessmentService.skillBaseMcqs(id);
         res.status(200).json({
             data: data,
             message: 'Mcqs fetched successfully!'
+        })
+    })
+
+    app.get('/getSkillType',auth, async (req,res) => {
+        const data = await skillAssessmentService.retrieveSkillType();
+        res.status(200).json({
+            data: data,
+            message: 'Skill Type fetched successfully!'
+        })
+    })
+
+    app.get('/getBadge',auth, async (req,res) => {
+        const data = await skillAssessmentService.retrieveBadge();
+        res.status(200).json({
+            data: data,
+            message: 'Badge fetched successfully!'
         })
     })
 
