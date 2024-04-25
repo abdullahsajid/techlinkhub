@@ -6,6 +6,7 @@ const cloudinary = require('cloudinary')
 const {db_connection} = require('./database/db_index')
 const orgApis = require('./api/orgApis')
 const AssessmentApis = require('./api/AssessmentApis')
+const projectApis = require("./api/projectApis")
 
 const corsOptions = {
     origin:['http://localhost:3000'], 
@@ -21,7 +22,7 @@ app.use(express.urlencoded({limit:'50mb', extended:true }))
 db_connection()
 orgApis(app)
 AssessmentApis(app)
-
+projectApis(app)
 app.get('/',(req,res)=>{
     res.status(200).json({
         message:"Testing from organization!"
