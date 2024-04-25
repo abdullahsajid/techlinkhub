@@ -32,4 +32,40 @@ module.exports = (app) => {
             res.status(500).json({message:err.message})
         }
     })
+
+    app.delete('/deleteProject/:id',auth, async (req,res) => {
+        try{
+            const data = await projectServices.delProject(req.params.id)
+            res.status(200).json({
+                data: data,
+                message: 'Project deleted successfully!'
+            })
+        }catch(err){
+            res.status(500).json({message:err.message})
+        }
+    })
+
+    app.get('/summonAllProjects',auth, async (req,res) => {
+        try{
+            const data = await projectServices.retrieveProject(req.user.id)
+            res.status(200).json({
+                data: data[0],
+                message: 'Projects retrieved successfully!'
+            })
+        }catch(err){
+            res.status(500).json({message:err.message})
+        }
+    })
+
+    app.get('/summonProjectById/:id',auth, async (req,res) => {
+        try{
+            const data = await projectServices.retrieveProjectById(req.params.id)
+            res.status(200).json({
+                data: data[0],
+                message: 'Project retrieved successfully!'
+            })
+        }catch(err){
+            res.status(500).json({message:err.message})
+        }
+    })
 } 

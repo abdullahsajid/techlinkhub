@@ -72,6 +72,16 @@ class Project {
         return updateProject[0]
     }
 
+    async deleteProject({id}){
+        const project = await this.proj.db.query(`DELETE FROM projects WHERE project_id = ?`,[id])
+        return project[0]
+    }
+
+    async summonAllProjects(user_id){
+        const project = await this.proj.db.query(`SELECT * FROM projects WHERE user_id = ?`,[user_id])
+        return project
+    }
+
 }
 
 
