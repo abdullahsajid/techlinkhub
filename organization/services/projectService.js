@@ -16,6 +16,21 @@ class ProjectService {
         const updateProject = await this.project.updateProject(summon,updateData)
         return updateProject
     }
+
+    async delProject(id){
+        const deleteProject = await this.project.deleteProject({id})
+        return deleteProject
+    }
+
+    async retrieveProject(id){
+        const project = await this.project.summonAllProjects(id)
+        return project
+    }
+
+    async retrieveProjectById(id){
+        const project = await this.project.getProjectById({id})
+        return project
+    }
 }
 
 module.exports = ProjectService
