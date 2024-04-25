@@ -1,8 +1,10 @@
 const OrgService = require('../services/org-service')
 const auth = require('./middleware/auth')
+const project = require('../database/repository/project')
 module.exports = (app) => {
     const service = new OrgService()
-
+    //const projects = new project()
+    //projects.createProject({title:'hello',description:'hello',budget:'hello',status:'hello',type:'hello',skills:{item:'asd',item:'dasd'}})
     app.post('/createOrgProfile',auth,async(req,res)=>{
         const data = await service.profile({
             name:req.body.name,
