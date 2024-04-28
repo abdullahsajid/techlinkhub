@@ -23,7 +23,7 @@ class ProjectService {
     }
 
     async retrieveProject(id){
-        const project = await this.project.summonAllProjects(id)
+        const project = await this.project.summonAllProjectsByUser(id)
         return project
     }
 
@@ -31,6 +31,13 @@ class ProjectService {
         const project = await this.project.getProjectById({id})
         return project
     }
+
+    async retrieveProjects(){
+        const projects = await this.project.summonAllProjects()
+        return projects
+    }
+
+    
 }
 
 module.exports = ProjectService

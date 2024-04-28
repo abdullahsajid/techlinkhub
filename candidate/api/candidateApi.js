@@ -1,8 +1,36 @@
 const candidateService = require('../services/candidate-service')
 const auth = require('./middleware/auth')
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 module.exports = (app) => {
     const service = new candidateService()
+
+    app.post("/create-checkout-session", async (req, res) => {
+        try {
+            const session = await stripe.checkout.sessions.create({
+              payment_method_types: ["card"],
+              mode: "payment",
+              line_items: req.body.items.map(item => {
+               
+                return {
+                  price_data: {
+                    currency: "usd",
+                    product_data: {
+                      name: item.name,
+                    },
+                    unit_amount: item.price*100,
+                  },
+                  quantity: item.quantity,
+                }
+              }),
+              success_url: `http://localhost:3000/home`,
+              cancel_url: `http://localhost:3000/home`,
+            })
+            res.json({ url: session.url })
+          } catch (e) {
+            res.status(500).json({ error: e.message })
+          }
+    })
 
     app.post('/signup', async (req,res,next) => {
         const data = await service.signUp({
@@ -179,6 +207,15 @@ module.exports = (app) => {
         }
     })
 
+    app.get('/getProfileById/:id',auth,async(req,res) => {
+        try{
+            const id = req.params.id
+            const data = await service.retrieveProfileById({id})
+            res.status(200).json({data:data[0]})
+        }catch(err){
+            res.status(500).json({message:err.message})
+        }
+    })
 
     app.get("/logout",(req,res) => {
         try{

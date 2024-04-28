@@ -138,6 +138,11 @@ class CandidateService {
   //     return postImg
   // }
 
+  async retrieveProfileById({ id }) {
+    const profile = await this.repository.getProfileById({ id });
+    return profile;
+  }
+
   async updateProfileDetails(id, updateData) {
     const profile = await this.repository.getProfile({ id });
     const data = profile[0];

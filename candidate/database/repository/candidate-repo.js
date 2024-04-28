@@ -283,6 +283,11 @@ class CandidateRepository{
     //     return imgs[0]
     // }
     
+    async getProfileById({id}){
+        const profile = await this.db.query(`SELECT * FROM profile WHERE user_id = ?`,[id])
+        return profile[0]
+    }
+
     async updateProfile(data,updateData){
         let updateObject={}
         if(data.name !== updateData.name){
