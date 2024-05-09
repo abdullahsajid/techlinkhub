@@ -115,6 +115,11 @@ class CandidateService {
     return comments;
   }
 
+  async summonAllComments(){
+    const comment = await this.repository.getAllComments()
+    return comment
+  }
+
   async getUserLikes({ id }) {
     const comments = await this.repository.getLikes({ id });
     return comments;

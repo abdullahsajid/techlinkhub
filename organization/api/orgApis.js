@@ -95,9 +95,9 @@ module.exports = (app) => {
                 orgId:req.params.id,
                 userId:req.user.id
             })
-            res.status(201).json({success:false,message:"successfully created!",data:data})
+            res.status(201).json({success:false,message:"successfully created!",data:data,success:true})
         }catch(err){
-            res.status(500).json({success:false,message:err.message})
+            res.status(500).json({success:false,message:err.message,success:false})
         }
     })
 

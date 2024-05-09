@@ -152,7 +152,16 @@ module.exports = (app) => {
         }  
     })
 
-    app.get('/postLike/:id',auth, async (req,res) => {
+    app.get('/getallcomments', auth, async (req,res)=>{
+        try{
+            const data = await service.summonAllComments()
+            res.status(201).json({success:true,data:data[0]})
+        }catch(err){
+            res.status(500).json({success:false,message:err.message})
+        }  
+    })
+
+    app.post('/postLike/:id',auth, async (req,res) => {
         try {
             const data = await service.userLike({
                 postId:req.params.id,
