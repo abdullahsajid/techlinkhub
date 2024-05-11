@@ -29,13 +29,26 @@ module.exports = (app) => {
         res.status(200).json({data:data[0]})
     })
 
+    app.get('/getallProfile',auth,async(req,res)=>{
+        try{
+            const data = await service.allProfileDetails()
+            res.status(201).json({data,message:'org profile',success:true})
+        }catch(error){
+            res.status(500).json({message:error.message,success:false})
+        }
+    })
+
     app.post('/orgPost/:id',auth,async(req,res)=>{
-        const data = await service.userPost({
-            content:req.body.content,
-            userProfile:req.params.id,
-            userId:req.user.id
-        })
-        res.status(201).json({data,message:'post added successfully!'})
+        try{
+            const data = await service.userPost({
+                content:req.body.content,
+                userProfile:req.params.id,
+                userId:req.user.id
+            })
+            res.status(201).json({data,message:'post added successfully!',success:true})
+        }catch(error){
+            res.status(500).json({message:error.message,success:false})
+        }
     })
 
     app.post('/postComment/:id',auth,async(req,res) => {
@@ -44,7 +57,29 @@ module.exports = (app) => {
             postId:req.params.id,
             userId:req.user.id
         })
-        res.status(201).json({data,message:"comment added!"})
+        res.status(201).json({data,message:"comment added!",success:true})
+    })
+
+    app.get('/getCommentByid/:id',auth,async(req,res) => {
+        try{
+            const data = await service.summonCommentsById({
+                id:req.params.id
+            })
+            res.status(201).json({data,message:"retrieve comments"})
+        }catch(err){
+            res.status(500).json({message:err})
+        }
+    })
+    
+    app.get('/getLikeByid/:id',auth,async(req,res) => {
+        try{
+            const data = await service.summonLikeById({
+                id:req.params.id
+            })
+            res.status(201).json({data,message:"retrieve likes"})
+        }catch(err){
+            res.status(500).json({message:err})
+        }
     })
 
     app.post('/postLike/:id',auth, async (req,res) => {
@@ -79,6 +114,17 @@ module.exports = (app) => {
         res.status(201).json({data})
     })
 
+    app.get('/getPostByid/:id',auth,async(req,res) => {
+        try{
+            const data = await service.summonPostById({
+                id:req.params.id
+            })
+            res.status(201).json({data,message:"retrieve posts"})
+        }catch(err){
+            res.status(500).json({message:err})
+        }
+    })
+
 
     app.post('/createJob/:id',auth, async (req,res) => {
         try{
@@ -95,12 +141,20 @@ module.exports = (app) => {
                 orgId:req.params.id,
                 userId:req.user.id
             })
-            res.status(201).json({success:false,message:"successfully created!",data:data,success:true})
+            res.status(201).json({message:"successfully created!",data:data,success:true})
         }catch(err){
-            res.status(500).json({success:false,message:err.message,success:false})
+            res.status(500).json({message:err.message,success:false})
         }
     })
 
+    app.get('/getJob/:id',auth,async (req,res) => {
+        try{
+            const data = await service.getJobs({id:req.params.id})
+            res.status(201).json({data:data,success:true})
+        }catch(error){
+            res.status(500).json({success:false,message:error})
+        }
+    })
 
     app.put('/updateProfile',auth,async(req,res) => {
         try{
