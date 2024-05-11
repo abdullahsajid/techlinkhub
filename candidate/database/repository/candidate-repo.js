@@ -59,17 +59,47 @@ class CandidateRepository{
     }
 
     async createProfile({name,bio,about,education,banner,avatar,experience,userId}){
-        const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
-            folder:'tlhbanner'
-        })
-        const tlhavatar = await cloudinary.v2.uploader.upload(avatar,{
-            folder:'tlkavatar'
-        })
-        const profileBanner = tlhBanner.secure_url
-        const profileAvatar = tlhavatar.secure_url
-        const profileData = await this.db.query(`INSERT INTO profile (name,bio,about,education,banner_url,avatar_url,experience,user_id) VALUES (?,?,?,?,?,?,?,?)`,
-        [name,bio,about,education,profileBanner,profileAvatar,experience,userId])
+        try{
+        let selectItem = {};
+        if(name !== ''){
+            selectItem.name = name
+        }
+        if(bio !== ''){
+            selectItem.bio = bio
+        }
+        if(about !== ''){
+            selectItem.about = about
+        }
+        if(education !== ''){
+            selectItem.education = education
+        }
+        if(experience !== ''){
+            selectItem.education = education
+        }
+        if(banner !== null || banner !== ''){
+            console.log("Banner");
+            const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
+                folder:'tlhbanner'
+            })
+            const profileBanner = tlhBanner.secure_url
+            selectItem.banner_url = profileBanner
+        }
+        if(avatar !== null || avatar !== ''){
+            console.log("Avatar");
+            const tlhavatar = await cloudinary.v2.uploader.upload(avatar,{
+                folder:'tlkavatar'
+            })
+            const profileAvatar = tlhavatar.secure_url
+            selectItem.avatar_url = profileAvatar
+        }
+        const key = Object.keys(selectItem);
+        const val = Object.values(selectItem);
+        const setKeys = key.map((key) => `${key} = ?`).join(", ");
+        const profileData = await this.db.query(`INSERT INTO profile SET ${setKeys},user_id = ?`,[...val,userId])
         return profileData
+    }catch(err){
+        console.log(err);
+    }
     }
 
     async addSkills({skill_name,userId}){
@@ -191,6 +221,11 @@ class CandidateRepository{
                 ) AS comments
             `,[id])
         return comment[0]
+    }
+
+    async getAllComments(){
+        const comment = await this.db.query(`SELECT * FROM comments`)
+        return comment
     }
 
     async getLikes({id}){

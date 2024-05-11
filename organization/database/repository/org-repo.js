@@ -53,6 +53,16 @@ class OrgRepository{
                 org_profile AS op WHERE user_id = ?`,[id])
         return profile[0]
     }
+
+    async getAllOrgProfile(){
+        const profile = await this.db.query(`SELECT * FROM org_profile`)
+        return profile[0]
+    }
+
+    async getJob({id}){
+        const jobs = await this.db.query(`SELECT * FROM createjob WHERE cj_orgProId = ?`,[id])
+        return jobs[0]
+    }
     
     async post({content,userProfile,userId}){
         const candidatePost = await this.db.query(`INSERT INTO post (content,userProfile_id,user__id) VALUES (?,?,?)`,[content,userProfile,userId])
@@ -64,8 +74,32 @@ class OrgRepository{
         return comments
     }
 
-    async postLike({postId,userId}){
-        const like = await this.db.query(`INSERT INTO org_post_likes (userPost_id,userOrgId) VALUES (?,?)`,[postId,userId])
+    async getComments({id}){
+        const getComment = await this.db.query(`SELECT * FROM comments WHERE IdPost = ?`,[id])
+        return getComment[0]
+    }
+    
+    async postLike({postId,userId,data}){
+        
+        if(data == null && !data){
+            const like = await this.db.query(`INSERT INTO org_post_likes (userPost_id,userOrgId) VALUES (?,?)`,[postId,userId])
+            return like[0]
+        }
+        // const check = data.some(item => item.userOrgId === userId)
+        // console.log("check: ",check)
+        if(data?.userOrgId === userId){
+            const like = await this.db.query(`DELETE FROM org_post_likes WHERE userPost_id =? AND userOrgId = ?`,[postId,userId])
+            return like[0]
+        }else{
+            const like = await this.db.query(`INSERT INTO org_post_likes (userPost_id,userOrgId) VALUES (?,?)`,[postId,userId])
+            return like[0]
+        }
+        // const like = await this.db.query(`INSERT INTO org_post_likes (userPost_id,userOrgId) VALUES (?,?)`,[postId,userId])
+        // return like[0]
+    }
+
+    async getPostLikeById({id}){
+        const like = await this.db.query(`SELECT * FROM org_post_likes WHERE userPost_id = ?`,[id])
         return like[0]
     }
 
@@ -87,35 +121,39 @@ class OrgRepository{
     }
 
     async getPost({id}){
-        const post = await this.db.query(`
-        SELECT 
-            p.*,
-            (SELECT JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'comment_id', c.comment_id,
-                            'comment', c.comment,
-                            'userId', c.userComm_id
-                        )
-                    )
-            FROM comments c 
-            WHERE p.post_id = c.IdPost
-            ) AS comments,
-            COUNT(DISTINCT c.comment_id) AS comment_count,
-            COUNT(DISTINCT l.org_like_id) AS like_count
-        FROM 
-            post p 
-        LEFT JOIN 
-            comments c ON p.post_id = c.IdPost
-        LEFT JOIN 
-            org_post_likes l ON p.post_id = l.userPost_id
-        WHERE 
-            p.post_id = ?
-        GROUP BY 
-            p.post_id
-            `,[id])
+        const post = await this.db.query(`SELECT * FROM post WHERE userProfile_id = ?`,[id])
         return post[0]
     }
 
+    async getPostById({id}){
+        const post = await this.db.query(`SELECT * FROM post WHERE post_id = ?`,[id])
+        return post[0]
+    }
+
+//     SELECT 
+//     p.*,
+//     (SELECT JSON_ARRAYAGG(
+//                 JSON_OBJECT(
+//                     'comment_id', c.comment_id,
+//                     'comment', c.comment,
+//                     'userId', c.userComm_id
+//                 )
+//             )
+//     FROM comments c 
+//     WHERE p.post_id = c.IdPost
+//     ) AS comments,
+//     COUNT(DISTINCT c.comment_id) AS comment_count,
+//     COUNT(DISTINCT l.org_like_id) AS like_count
+// FROM 
+//     post p 
+// LEFT JOIN 
+//     comments c ON p.post_id = c.IdPost
+// LEFT JOIN 
+//     org_post_likes l ON p.post_id = l.userPost_id
+// WHERE 
+//     p.post_id = ?
+// GROUP BY 
+//     p.post_id
     async createJob({title,category,location,type,desc,resp,requirement,qual,skill,orgId,userId}){
         const job = await this.db.query(`INSERT INTO createjob (cj_title,cj_category,cj_location,cj_type,cj_description,cj_responsibility,cj_requirement,cj_qualification,cj_skills,cj_orgProId,cj_user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)`
         ,[title,category,location,type,desc,resp,requirement,qual,skill,orgId,userId])
