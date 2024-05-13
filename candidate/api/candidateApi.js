@@ -83,6 +83,12 @@ module.exports = (app) => {
         })
     })
 
+    app.get('/search',auth, async (req,res) => {
+        const para = req.query.q
+        const data = await service.summonSearch({para})
+        res.status(201).json({data,success:true})
+    })
+
     app.post('/addSkills',auth,async(req,res)=>{
         const data = await service.skills({
             skill_name:req.body.skill,
@@ -109,6 +115,25 @@ module.exports = (app) => {
     app.get('/getProfile',auth, async (req,res) => {
         const data = await service.profileDetails({id:req.user.id})
         res.status(200).json({data:data[0]})
+    })
+
+    app.get('/getProfileBySearch/:id',auth, async (req,res) => {
+        try{
+            const data = await service.summonProfileBySearch({id:req.params.id})
+            res.status(200).json({data:data[0]})
+        }catch(error){
+            res.status(500).json({message:err.message})
+        }
+    })
+
+    app.get('/getProfileBySearchAcc',auth, async (req,res) => {
+        try{
+            const para = req.query.q
+            const data = await service.summonSearchAcc({para})
+            res.status(200).json({data:data[0]})
+        }catch(error){
+            res.status(500).json({message:err.message})
+        }
     })
 
     app.post('/candidatePost',auth,async(req,res)=>{

@@ -54,6 +54,25 @@ class OrgRepository{
         return profile[0]
     }
 
+    async getProfileBySearch({id}){
+        const profile = await this.db.query(`
+            SELECT
+                op.id,op.org_name,op.description,op.org_email,op.industry,op.location,op.banner_url,op.avatar_url,op.org_website,op.about,op.createdAt,
+                (SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id',osl.id,
+                        'name',osl.social_name,
+                        'link',osl.link
+                            )
+                        )
+                FROM orgsociallinks AS osl
+                WHERE op.user_id = osl.userLink_id 
+                ) AS socialLinks
+            FROM 
+                org_profile AS op WHERE id = ?`,[id])
+        return profile[0]
+    }
+
     async getAllOrgProfile(){
         const profile = await this.db.query(`SELECT * FROM org_profile`)
         return profile[0]
