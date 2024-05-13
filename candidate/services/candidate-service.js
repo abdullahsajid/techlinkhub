@@ -91,6 +91,21 @@ class CandidateService {
     return profile;
   }
 
+  async summonProfileBySearch({id}){
+    const profile = await this.repository.getProfileBySearch({id})
+    return profile
+  }
+
+  async summonSearch({para}){
+    const search = await this.repository.Search({para})
+    return search
+  }
+
+  async summonSearchAcc({para}){
+    const search = await this.repository.SearchAcc({para})
+    return search
+  }
+
   async userPost({ content, url, userId }) {
     const post = await this.repository.post({ content, url, userId });
     return post;

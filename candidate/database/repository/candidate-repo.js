@@ -114,8 +114,6 @@ class CandidateRepository{
     }
 
     async getProfile({id}){
-        // const likes = await this.db.query(`SELECT * FROM candidate_post_likes`)
-        // console.log(likes[0])
         const profile = await this.db.query(`
         SELECT 
             p.id,p.banner_url,p.avatar_url,p.name,p.bio,p.education,p.experience,p.about,
@@ -179,6 +177,106 @@ class CandidateRepository{
         `,[id])
         return profile[0]
     }
+
+    async getProfileBySearch({id}){
+        const profile = await this.db.query(`
+        SELECT 
+            p.id,p.banner_url,p.avatar_url,p.name,p.bio,p.education,p.experience,p.about,
+            (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id', s.id,
+                    'skill', s.skill_name
+                        )
+                    )
+            FROM skills s 
+            WHERE p.user_id = s.user_id
+            ) AS skill,
+            (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id', sl.id,
+                    'socialName', sl.social_name,
+                    'link',sl.link
+                        )
+                    )
+            FROM socialLinks sl 
+            WHERE p.user_id = sl.user_id
+            ) AS socialLink,
+            (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id' , cp.post_id,
+                    'content', cp.content,
+                    'createdAt',cp.createdAt,
+                    'postImg',cp.url,
+                    'userId',cp.userPost_id,
+                    "comments",(SELECT JSON_ARRAYAGG(
+                                JSON_OBJECT(
+                                    'id', c.comment_id,
+                                    'comment', c.comment,
+                                    'postId',c.IdPost,
+                                    "userId",c.userComm_id,
+                                    'createdAt',c.createdAt
+                                        )
+                                    )
+                            FROM comments c 
+                            WHERE c.IdPost = cp.post_id
+                            ),
+                    "likes",(SELECT JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'id',candLike.id,
+                                'PostId',candLike.userPost_id,
+                                'userId',candLike.usercandId
+                                    )    
+                                )
+                            FROM candidate_post_likes candLike
+                            WHERE candLike.userPost_id = cp.post_id
+                            )      
+                        )
+                    )
+            FROM candidatepost cp
+            WHERE p.user_id = cp.userPost_id
+            ) AS candidatePosts
+        FROM 
+            profile p 
+        WHERE 
+            p.id = ?
+        `,[id])
+        return profile[0]
+    }
+
+    async Search({para}){
+        const search = await this.db.query(`(
+            SELECT 'org_profile' AS source_table,id,avatar_url,org_name,description
+            FROM organization.org_profile
+            WHERE org_name LIKE ? OR description LIKE ?
+            LIMIT 3
+          )
+          UNION
+          (
+            SELECT 'profile' AS source_table,id AS userID,avatar_url AS avatar,name AS pro_name,bio AS pro_bio
+            FROM profile
+            WHERE name LIKE ? OR bio LIKE ?
+            LIMIT 3
+          )`,[`%${para}%`,`%${para}%`,`%${para}%`,`%${para}%`])
+        return search[0]
+    }
+
+    async SearchAcc({para}){
+        const search = await this.db.query(`(
+            SELECT 'org_profile' AS source_table,id,avatar_url,org_name,description
+            FROM organization.org_profile
+            WHERE org_name LIKE ? OR description LIKE ? 
+            
+          )
+          UNION
+          (
+            SELECT 'profile' AS source_table,id AS userID,avatar_url AS avatar,name AS pro_name,bio AS pro_bio
+            FROM profile
+            WHERE name LIKE ? OR bio LIKE ?
+            
+          )`,[`${para}%`,`%${para}`,`%${para}%`,`${para}%`])
+        return search[0]
+    }
+    
 
     async post({content,url,userId}){
         if(url == null && !url){

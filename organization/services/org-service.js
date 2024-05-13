@@ -19,6 +19,11 @@ class OrgService{
         return profile
     }
 
+    async summonProfileBySearch({id}){
+        const profile = await this.repository.getProfileBySearch({id})
+        return profile
+    }
+
     async allProfileDetails(){
         const profile = await this.repository.getAllOrgProfile()
         return profile

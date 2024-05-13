@@ -38,6 +38,15 @@ module.exports = (app) => {
         }
     })
 
+    app.get('/getProfileBySearch/:id',auth,async(req,res)=>{
+        try{
+            const data = await service.summonProfileBySearch({id:req.params.id})
+            res.status(201).json({data,success:true})
+        }catch(error){
+            res.status(500).json({message:error.message,success:false})
+        }
+    })
+
     app.post('/orgPost/:id',auth,async(req,res)=>{
         try{
             const data = await service.userPost({
