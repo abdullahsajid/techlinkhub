@@ -54,7 +54,7 @@ module.exports = (app) => {
     })
 
     app.get('/getBadge',auth, async (req,res) => {
-        const data = await skillAssessmentService.retrieveBadge();
+        const data = await skillAssessmentService.retrieveBadge({id:req.user.id});
         res.status(200).json({
             data: data,
             message: 'Badge fetched successfully!'

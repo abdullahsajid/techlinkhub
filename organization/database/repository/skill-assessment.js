@@ -89,7 +89,7 @@ class SkillAssessment {
     return data[0];
   }
 
-  async getBadge() {
+  async getBadge({id}) {
     const data = await this.org.db.query(
       `SELECT 
           sc.*,
@@ -105,7 +105,9 @@ class SkillAssessment {
         ) AS skillTypes 
       FROM 
         scores sc
-      `
+      WHERE 
+        sc.user_id = ?
+      `,[id]
     );
     return data[0];
   }

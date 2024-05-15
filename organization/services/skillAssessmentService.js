@@ -31,7 +31,7 @@ class SkillAssessmentService {
     let badge = ''
     if(cal <= 0){
         badge = null
-    }else if(cal > 0 && cal<=30){
+    }else if(cal >= 10){
         badge = 'Beginner'
     }else if (cal > 30 && cal <= 60){
         badge = 'Intermediate'
@@ -52,8 +52,8 @@ class SkillAssessmentService {
     return data;
   }
 
-  async retrieveBadge(){
-    const data = await this.skill.getBadge();
+  async retrieveBadge({id}){
+    const data = await this.skill.getBadge({id});
     return data;
   }
 
