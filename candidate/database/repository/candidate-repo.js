@@ -60,46 +60,46 @@ class CandidateRepository{
 
     async createProfile({name,bio,about,education,banner,avatar,experience,userId}){
         try{
-        let selectItem = {};
-        if(name !== ''){
-            selectItem.name = name
+            let selectItem = {};
+            if(name !== ''){
+                selectItem.name = name
+            }
+            if(bio !== ''){
+                selectItem.bio = bio
+            }
+            if(about !== ''){
+                selectItem.about = about
+            }
+            if(education !== ''){
+                selectItem.education = education
+            }
+            if(experience !== ''){
+                selectItem.education = education
+            }
+            if(banner !== null && banner !== ''){
+                const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
+                    folder:'tlhbanner'
+                })
+                const profileBanner = tlhBanner.secure_url
+                selectItem.banner_url = profileBanner
+            }
+            if(avatar !== null && avatar !== ''){
+                console.log("Avatar");
+                const tlhavatar = await cloudinary.v2.uploader.upload(avatar,{
+                    folder:'tlkavatar'
+                })
+                const profileAvatar = tlhavatar.secure_url
+                selectItem.avatar_url = profileAvatar
+            }
+            const key = Object.keys(selectItem);
+            const val = Object.values(selectItem);
+            const setKeys = key.map((key) => `${key} = ?`).join(", ");
+            const profileData = await this.db.query(`INSERT INTO profile SET ${setKeys},user_id = ?`,[...val,userId])
+            return profileData
+
+        }catch(err){
+            console.log(err);
         }
-        if(bio !== ''){
-            selectItem.bio = bio
-        }
-        if(about !== ''){
-            selectItem.about = about
-        }
-        if(education !== ''){
-            selectItem.education = education
-        }
-        if(experience !== ''){
-            selectItem.education = education
-        }
-        if(banner !== null || banner !== ''){
-            console.log("Banner");
-            const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
-                folder:'tlhbanner'
-            })
-            const profileBanner = tlhBanner.secure_url
-            selectItem.banner_url = profileBanner
-        }
-        if(avatar !== null || avatar !== ''){
-            console.log("Avatar");
-            const tlhavatar = await cloudinary.v2.uploader.upload(avatar,{
-                folder:'tlkavatar'
-            })
-            const profileAvatar = tlhavatar.secure_url
-            selectItem.avatar_url = profileAvatar
-        }
-        const key = Object.keys(selectItem);
-        const val = Object.values(selectItem);
-        const setKeys = key.map((key) => `${key} = ?`).join(", ");
-        const profileData = await this.db.query(`INSERT INTO profile SET ${setKeys},user_id = ?`,[...val,userId])
-        return profileData
-    }catch(err){
-        console.log(err);
-    }
     }
 
     async addSkills({skill_name,userId}){
@@ -439,24 +439,40 @@ class CandidateRepository{
             updateObject.experience = updateData.experience
         }
         if(data.banner_url !== updateData.banner){
-            const extract_id = await data.banner_url.split('/').pop().split('.')[0]
-            const  public_id = `tlhbanner/${extract_id}`
-            await cloudinary.v2.uploader.destroy(public_id)
-            const tlhBanner = await cloudinary.v2.uploader.upload(updateData.banner,{
-                folder:'tlhbanner'
-            })
-            const profileBanner = tlhBanner.secure_url
-            updateObject.banner_url = profileBanner
+            if(data.banner_url === null){
+                const tlhBanner = await cloudinary.v2.uploader.upload(updateData.banner,{
+                    folder:'tlhbanner'
+                })
+                const profileBanner = tlhBanner.secure_url
+                updateObject.banner_url = profileBanner
+            }else{
+                const extract_id = await data.banner_url.split('/').pop().split('.')[0]
+                const  public_id = `tlhbanner/${extract_id}`
+                await cloudinary.v2.uploader.destroy(public_id)
+                const tlhBanner = await cloudinary.v2.uploader.upload(updateData.banner,{
+                    folder:'tlhbanner'
+                })
+                const profileBanner = tlhBanner.secure_url
+                updateObject.banner_url = profileBanner
+            }
         }
         if(data.avatar_url !== updateData.avatar){
-            const extract_id = await data.avatar_url.split('/').pop().split('.')[0]
-            const  public_id =  `tlkavatar/${extract_id}`
-            await cloudinary.v2.uploader.destroy(public_id)
-            const tlhavatar = await cloudinary.v2.uploader.upload(updateData.avatar,{
-                folder:'tlkavatar'
-            })
-            const profileAvatar =  tlhavatar.secure_url
-            updateObject.avatar_url = profileAvatar
+            if(data.avatar_url === null){
+                const tlhavatar = await cloudinary.v2.uploader.upload(updateData.avatar,{
+                    folder:'tlkavatar'
+                })
+                const profileAvatar =  tlhavatar.secure_url
+                updateObject.avatar_url = profileAvatar
+            }else{
+                const extract_id = await data.avatar_url.split('/').pop().split('.')[0]
+                const  public_id =  `tlkavatar/${extract_id}`
+                await cloudinary.v2.uploader.destroy(public_id)
+                const tlhavatar = await cloudinary.v2.uploader.upload(updateData.avatar,{
+                    folder:'tlkavatar'
+                })
+                const profileAvatar =  tlhavatar.secure_url
+                updateObject.avatar_url = profileAvatar
+            }
         }
         const key = Object.keys(updateObject)
         const values = Object.values(updateObject)
