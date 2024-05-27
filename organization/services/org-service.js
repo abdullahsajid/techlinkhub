@@ -8,8 +8,8 @@ class OrgService{
     }
 
     async profile(profileData){
-        const{name,desc,email,industry,location,banner,avatar,website,userId,about} = profileData
-        const profileDetail = await this.repository.createProfile({name,desc,email,industry,location,banner,avatar,website,userId,about})
+        const{name,desc,email,industry,location,banner,avatar,website,userId,about,founded_date} = profileData
+        const profileDetail = await this.repository.createProfile({name,desc,email,industry,location,banner,avatar,website,userId,about,founded_date})
         return profileDetail
     }
 
