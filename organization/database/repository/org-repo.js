@@ -21,7 +21,7 @@ class OrgRepository{
         }
     }
 
-    async createProfile({name,desc,email,industry,location,banner,avatar,website,userId,about}){
+    async createProfile({name,desc,email,industry,location,banner,avatar,website,userId,about,founded_date}){
         try{
             let selectItem = {};
             if(name !== ''){
@@ -44,6 +44,9 @@ class OrgRepository{
             }
             if(about !== ''){
                 selectItem.about = about
+            }
+            if(founded_date !== ''){
+                selectItem.founded_date = founded_date
             }
             if(banner !== null && banner !== ''){
                 const tlhBanner = await cloudinary.v2.uploader.upload(banner,{
@@ -73,7 +76,7 @@ class OrgRepository{
     async getProfile({id}){
         const profile = await this.db.query(`
             SELECT
-                op.id,op.org_name,op.description,op.org_email,op.industry,op.location,op.banner_url,op.avatar_url,op.org_website,op.about,op.createdAt,
+                op.id,op.org_name,op.description,op.org_email,op.industry,op.location,op.banner_url,op.avatar_url,op.org_website,op.about,op.createdAt,op.founded_date,
                 (SELECT JSON_ARRAYAGG(
                     JSON_OBJECT(
                         'id',osl.id,
@@ -236,6 +239,9 @@ class OrgRepository{
         }
         if(data.org_website !== updateData.website){
             updateObject.org_website = updateData.website
+        }
+        if(data.founded_date !== updateData.founded_date){
+            updateObject.founded_date = updateData.founded_date
         }
         if(data.banner_url !== updateData.banner){
             if(data.banner_url === null){

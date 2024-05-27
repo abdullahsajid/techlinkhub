@@ -16,7 +16,8 @@ module.exports = (app) => {
             avatar:req.body.avatar,
             website:req.body.weblink,
             userId:req.user.id,
-            about:req.body.about
+            about:req.body.about,
+            founded_date:req.body.founded_date
         })
         res.status(201).json({
             data:data,
@@ -178,7 +179,8 @@ module.exports = (app) => {
                     banner:req.body.banner,
                     avatar:req.body.avatar,
                     website:req.body.weblink,
-                    about:req.body.about
+                    about:req.body.about,
+                    founded_date:req.body.founded_date
                 }
             )
             res.status(200).json({data,
