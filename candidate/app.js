@@ -49,20 +49,16 @@ io.on('connection',(socket) => {
         socket.emit("connected");
     });
 
-    // socket.on('makeroom',(id) => {
-    //     socket.join(id)
-    //     socket.emit('connected',id)
-    // })
-
     socket.on('join chat',(room) => {
         socket.join(room)
         console.log("user has joined the room :",room);
     })
 
-    socket.on('new message',(data) => {
-        // console.log("Message: ",data)
-        // io.sockets.adapter.rooms.get(data.rid)
-        io.in(data.sender_id).emit('message recieved',data)
+    socket.on('new message',({sendData,roomId}) => {
+        // console.log(sendData);
+        // console.log(roomId);
+        // const room = getRoomId(data.chatinfo.sender_id, data.chatinfo.your_id);
+        io.to(roomId).emit('message recieved',sendData)
     })
     
     socket.on('disconnect', () => {
@@ -70,6 +66,15 @@ io.on('connection',(socket) => {
     });
 })
 
+function getRoomId(user1, user2) {
+    return [user1, user2].sort().join('_'); // Ensure the room id is consistent
+}
+// console.log("Message: ",data)
+        // io.sockets.adapter.rooms.get(data.rid)
+        // socket.on('makeroom',(id) => {
+    //     socket.join(id)
+    //     socket.emit('connected',id)
+    // })
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.API_KEY,

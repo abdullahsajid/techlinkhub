@@ -72,7 +72,15 @@ class chat{
                     )
                     FROM profile p
                     WHERE messages.sender_id = p.user_id 
-                ) AS profileinfo 
+                ) AS profileinfo,
+                (SELECT JSON_OBJECT(
+                    'chatId',c.chatId,
+                    'sender_id',c.sender_id,
+                    'your_id',c.your_id
+                    )
+                    FROM chats c
+                    WHERE messages.chat_id = c.chatId 
+                ) AS chatinfo
             FROM messages 
             WHERE message_id = ?
         `,[data.insertId])
